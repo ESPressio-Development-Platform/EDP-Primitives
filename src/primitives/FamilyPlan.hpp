@@ -225,4 +225,40 @@ namespace ESPressio::Primitives {
 
     } // ESPressio::Primitives::Detail
 
+
+    /// Predicate identifying one canonical Planner implementation for a specific planning input.
+    ///
+    /// A family Planner is associated directly through `Family::Planner`. Its `Plan` alias
+    /// receives the complete declaration set for that family plus the statically configured
+    /// TransportSet and must emit canonical FamilyPlan output.
+    ///
+    /// @tparam TPlanner Candidate Planner Type.
+    /// @tparam TFamily Primitive family being planned.
+    /// @tparam TDeclarations Complete family-owned deployment declaration TypeList.
+    /// @tparam TTransportSet Statically configured TransportSet.
+    template<
+        class TPlanner,
+        class TFamily,
+        class TDeclarations,
+        class TTransportSet
+    >
+    concept FamilyPlannerFor =
+        PrimitiveFamilyType<TFamily> &&
+        Detail::TypeListTraits<TDeclarations>::IsValid &&
+        Detail::TransportSetTraits<TTransportSet>::IsValid &&
+        requires {
+            typename TPlanner::template Plan<
+                TFamily,
+                TDeclarations,
+                TTransportSet
+            >;
+        } &&
+        Detail::FamilyPlanTraits<
+            typename TPlanner::template Plan<
+                TFamily,
+                TDeclarations,
+                TTransportSet
+            >
+        >::IsValid;
+
 } // ESPressio::Primitives
