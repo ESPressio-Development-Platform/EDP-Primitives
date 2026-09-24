@@ -44,7 +44,8 @@ The main host test verifies:
 - independent outbound exposure;
 - resource-plan retention;
 - generated Primitive Composition;
-- direct System Architecture compatibility.
+- direct System Architecture compatibility;
+- two independently planned families sharing one runtime Provider Type, with provider de-duplication in the generated Composition.
 
 ## Compile-fail coverage
 
