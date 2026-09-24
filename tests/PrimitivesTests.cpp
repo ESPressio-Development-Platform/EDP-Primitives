@@ -7,7 +7,6 @@
 namespace ESPressio::Primitives::Tests {
 
     namespace Framework = ESPressio::System::CompositionFramework;
-    namespace Support = ESPressio::Primitives::Tests::Support;
 
 
     static_assert(
