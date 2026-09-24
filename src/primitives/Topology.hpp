@@ -339,6 +339,28 @@ namespace ESPressio::Primitives {
         };
 
 
+        /// Indicates whether every explicit binding targets a Primitive deployed by the same family plan.
+        ///
+        /// @tparam TPrimitiveTypes Primitive Types deployed by the family.
+        /// @tparam TBindings Explicit normalized transport bindings.
+        template<class TPrimitiveTypes, class TBindings>
+        struct BindingsTargetDeployedPrimitives;
+
+
+        /// Validates one explicit binding pack against the family's deployed Primitive list.
+        template<class TPrimitiveTypes, class... TBindings>
+        struct BindingsTargetDeployedPrimitives<
+            TPrimitiveTypes,
+            TypeList<TBindings...>
+        > final {
+
+            /// Indicates whether every binding targets a deployed Primitive Type.
+            static constexpr bool IsValid =
+                (TPrimitiveTypes::template Contains<typename TBindings::Primitive> && ...);
+
+        };
+
+
         /// Normalizes one canonical family plan.
         template<
             class TFamily,
@@ -373,6 +395,14 @@ namespace ESPressio::Primitives {
             static_assert(
                 !HasDuplicateTypes<ExpandedBindings>::Value,
                 "FamilyPlan contains duplicate transport bindings after normalization"
+            );
+
+            static_assert(
+                BindingsTargetDeployedPrimitives<
+                    TPrimitiveTypes,
+                    ExpandedBindings
+                >::IsValid,
+                "FamilyPlan transport bindings must target Primitive Types deployed by that same family plan"
             );
 
 
@@ -544,6 +574,11 @@ namespace ESPressio::Primitives {
     /// @tparam TDeployments Family-owned deployment declarations.
     template<class TTransportSet, class... TDeployments>
     struct Topology final {
+
+        static_assert(
+            Detail::TransportSetTraits<TTransportSet>::IsValid,
+            "Topology requires Primitives::TransportSet as its first template argument"
+        );
 
         static_assert(
             (FamilyDeploymentDeclaration<TDeployments> && ...),
