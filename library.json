@@ -1,0 +1,36 @@
+{
+  "name": "EDP-Primitives",
+  "description": "Compile-time Primitive family, deployment, topology and resource-planning foundation for the ESPressio Development Platform",
+  "keywords": "espressio,primitives,topology,composition,embedded",
+  "homepage": "https://espressio.org",
+  "authors": {
+    "name": "Simon Stuart",
+    "maintainer": true,
+    "url": "https://espressio.org"
+  },
+  "build": {
+    "flags": [
+      "-std=gnu++20"
+    ],
+    "unflags": [
+      "-std=gnu++11",
+      "-std=gnu++14",
+      "-std=gnu++17"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ESPressio-Development-Platform/EDP-Primitives.git"
+  },
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "frameworks": "*",
+  "platforms": "*",
+  "dependencies": [
+    {
+      "name": "EDP-System",
+      "version": "https://github.com/ESPressio-Development-Platform/EDP-System.git#feature/primitives_introduction",
+      "platforms": "*"
+    }
+  ]
+}
