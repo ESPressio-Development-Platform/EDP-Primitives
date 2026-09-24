@@ -151,6 +151,30 @@ namespace ESPressio::Primitives {
 
     namespace Detail {
 
+        /// Default TransportSet metadata for unrelated Types.
+        ///
+        /// @tparam TType Type being inspected.
+        template<class TType>
+        struct TransportSetTraits final {
+
+            /// Indicates whether the inspected Type is a common TransportSet.
+            static constexpr bool IsValid = false;
+
+        };
+
+
+        /// Metadata for one concrete TransportSet.
+        template<class... TTransports>
+        struct TransportSetTraits<
+            TransportSet<TTransports...>
+        > final {
+
+            /// Indicates that the inspected Type is a common TransportSet.
+            static constexpr bool IsValid = true;
+
+        };
+
+
         /// Default deployment-binding metadata for unrelated Types.
         ///
         /// @tparam TDeclaration Type being inspected.
