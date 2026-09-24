@@ -32,6 +32,10 @@ COMPILE_FAIL_TESTS = (
     ROOT / "tests" / "compile_fail" / "duplicate_binding.cpp",
     ROOT / "tests" / "compile_fail" / "rejected_binding.cpp",
     ROOT / "tests" / "compile_fail" / "binding_undeployed_primitive.cpp",
+    ROOT / "tests" / "compile_fail" / "duplicate_resource.cpp",
+    ROOT / "tests" / "compile_fail" / "unconfigured_transport.cpp",
+    ROOT / "tests" / "compile_fail" / "invalid_family_identifier.cpp",
+    ROOT / "tests" / "compile_fail" / "missing_family_planner.cpp",
 )
 
 COMMON_ARGUMENTS = (
