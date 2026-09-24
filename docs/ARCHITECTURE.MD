@@ -137,6 +137,8 @@ Primitives::Composition::FamilyRuntime<TFamily>
 
 Every normalized family plan supplies exactly one Provider offering its corresponding capability.
 
+A single Provider Type may intentionally satisfy more than one family's runtime capability. Topology de-duplicates identical Provider Types before constructing the Composition, while each FamilyPlan still has to prove that the Provider offers that family's exact `FamilyRuntime<TFamily>`.
+
 Topology constructs:
 
 ```cpp
