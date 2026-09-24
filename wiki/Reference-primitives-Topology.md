@@ -2,9 +2,9 @@
 
 **Primary classification:** PUBLIC TOPOLOGY API with PRIVATE IMPLEMENTATION normalization pipeline
 
-**Source baseline:** `f72501ec19ceb95295c4586ba74488acfa9ad9c9`
+**Source baseline:** `4aba3b000bfc896f243d11e19b724bf3da12287e`
 
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/f72501ec19ceb95295c4586ba74488acfa9ad9c9/src/primitives/Topology.hpp)
+[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/4aba3b000bfc896f243d11e19b724bf3da12287e/src/primitives/Topology.hpp)
 
 ## `Topology<TTransportSet, TDeployments...>`
 
@@ -108,7 +108,7 @@ Deterministically concatenates projected TypeLists.
 
 ### `MakePrimitiveComposition`
 
-Builds the normal EDP-System Composition from family runtime Providers.
+Builds the normal EDP-System Composition from family runtime Providers. Identical Provider Types are de-duplicated after each family plan has independently validated the exact FamilyRuntime capability it requires.
 
 ### `MakeResourcePlanSet`
 
