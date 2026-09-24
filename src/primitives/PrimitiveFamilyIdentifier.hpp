@@ -70,6 +70,11 @@ namespace ESPressio::Primitives {
             return static_cast<std::uint8_t>(_value & 0xFFU);
         }
 
+        /// Indicates whether the complete packed family identity is zero.
+        constexpr bool IsZero() const noexcept {
+            return _value == 0U;
+        }
+
         /// Indicates whether both family-identity components are non-zero.
         constexpr bool IsValid() const noexcept {
             return Authority().IsValid() && LocalValue() != 0U;
