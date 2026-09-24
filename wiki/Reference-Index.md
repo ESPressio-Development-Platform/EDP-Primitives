@@ -15,4 +15,4 @@ Every production header under `src/` has a maintained reference page.
 | `src/primitives/Topology.hpp` | PUBLIC TOPOLOGY API | [open](Reference-primitives-Topology) |
 | `src/primitives/TypeList.hpp` | PUBLIC COMPILE-TIME VOCABULARY | [open](Reference-primitives-TypeList) |
 
-> Stage 1 source audit tip: `daa6292ed43282e8f694dd06bfc3ff1e3e7f5238`. Individual reference pages retain the exact source commit appropriate to the header they document.
+> Stage 1 source audit tip: `4aba3b000bfc896f243d11e19b724bf3da12287e`. Individual reference pages retain the exact source commit appropriate to the header they document.
