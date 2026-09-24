@@ -2,9 +2,9 @@
 
 **Primary classification:** PUBLIC API with PRIVATE IMPLEMENTATION normalization helpers
 
-**Source baseline:** `f72501ec19ceb95295c4586ba74488acfa9ad9c9`
+**Source baseline:** `daa6292ed43282e8f694dd06bfc3ff1e3e7f5238`
 
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/f72501ec19ceb95295c4586ba74488acfa9ad9c9/src/primitives/Deployment.hpp)
+[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/daa6292ed43282e8f694dd06bfc3ff1e3e7f5238/src/primitives/Deployment.hpp)
 
 ## Public declarations
 
