@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #include <ESPressio_System.hpp>
@@ -24,7 +25,7 @@ namespace ESPressio::Primitives {
         // Family identity metadata.
 
         /// Exact retained family identity width in bytes.
-        static constexpr std::uint8_t Size = 4U;
+        static constexpr std::size_t Size = 4U;
 
 
         // Construction.
