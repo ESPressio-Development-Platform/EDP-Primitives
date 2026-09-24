@@ -54,7 +54,11 @@ Expected failures currently guard:
 - duplicate configured transport Types;
 - duplicate normalized bindings;
 - family Planner binding rejection;
-- binding a Primitive omitted from the family plan.
+- binding a Primitive omitted from the family plan;
+- duplicate semantic resource-dimension tags;
+- explicit bindings referencing an unconfigured transport;
+- Primitive-family identities with an invalid zero Type Authority;
+- Primitive-family declarations missing their canonical Planner association.
 
 ## Demo matrix
 
