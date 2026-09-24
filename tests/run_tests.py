@@ -24,6 +24,7 @@ CXX = os.environ.get("CXX", "c++")
 
 POSITIVE_TESTS = (
     ROOT / "tests" / "PrimitivesTests.cpp",
+    ROOT / "tests" / "SharedProviderTests.cpp",
 )
 
 COMPILE_FAIL_TESTS = (
