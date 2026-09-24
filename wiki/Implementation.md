@@ -68,7 +68,7 @@ Cross-family duplicates are rejected.
 
 ### 8. Build Composition
 
-Exactly one runtime Provider Type from each family plan is inserted into:
+Exactly one runtime Provider Type is selected by each family plan. Identical Provider Types are de-duplicated after family validation, so one concrete Provider may intentionally satisfy multiple family runtime capabilities and appears once in:
 
 ```cpp
 System::CompositionFramework::Composition<
