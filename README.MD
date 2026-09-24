@@ -16,7 +16,7 @@ It does **not** implement Command, Event, State, transport, Serialisation, runti
 - `FamilyPlan` / `FamilyPlannerFor` — maintained cross-repository family Planner extension contract.
 - `Topology` — groups family-owned deployment declarations, invokes each family Planner once, expands deployment sugar, validates binding eligibility, detects duplicate/conflicting declarations, and produces normalized output.
 - `Composition::Domain` / `Composition::FamilyRuntime<TFamily>` — focused Primitive runtime Composition surface.
-- `Topology::Composition` — ordinary `EDP-System` Composition suitable for direct inclusion in `CompositionFramework::Architecture`.
+- `Topology::Composition` — ordinary `EDP-System` Composition suitable for direct inclusion in `CompositionFramework::Architecture`. If one Provider Type intentionally supplies multiple families' `FamilyRuntime<...>` capabilities, it is inserted into the generated Composition once while each family plan is validated independently.
 
 ## Semantic Type declaration
 
