@@ -124,6 +124,16 @@ namespace ESPressio::Primitives {
             /// Canonical Planner directly associated by the family tag.
             using Planner = typename TFamily::Planner;
 
+            static_assert(
+                FamilyPlannerFor<
+                    Planner,
+                    TFamily,
+                    TDeclarations,
+                    TTransportSet
+                >,
+                "Family::Planner must satisfy the public FamilyPlannerFor extension contract"
+            );
+
             /// Raw canonical family plan emitted by the Planner.
             using RawPlan = typename Planner::template Plan<
                 TFamily,
