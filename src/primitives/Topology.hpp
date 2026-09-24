@@ -526,24 +526,64 @@ namespace ESPressio::Primitives {
         };
 
 
+        /// Converts one runtime-provider TypeList to the Primitive System Composition.
+        ///
+        /// @tparam TProviders Unique canonical runtime provider Types.
+        template<class TProviders>
+        struct MakeCompositionFromProviders;
+
+
+        /// Builds the existing System Composition from one concrete provider Type pack.
+        template<class... TProviders>
+        struct MakeCompositionFromProviders<
+            TypeList<TProviders...>
+        > final {
+
+            /// Primitive Domain Composition consumable by System Architecture.
+            using Type = System::CompositionFramework::Composition<
+                Composition::Domain,
+                TProviders...
+            >;
+
+        };
+
+
         /// Converts normalized family plans to a Primitive Composition.
+        ///
+        /// A provider Type may legitimately satisfy more than one family runtime capability.
+        /// The Composition therefore contains each runtime provider Type once, while each
+        /// FamilyPlan is still independently validated against its exact FamilyRuntime capability.
         ///
         /// @tparam TPlans Normalized family plans.
         template<class TPlans>
         struct MakePrimitiveComposition;
 
 
-        /// Builds the existing System Composition directly from canonical family runtime providers.
+        /// Builds the existing System Composition from unique canonical family runtime providers.
         template<class... TPlans>
         struct MakePrimitiveComposition<
             TypeList<TPlans...>
         > final {
 
-            /// Primitive Domain Composition consumable by System Architecture.
-            using Type = System::CompositionFramework::Composition<
-                Composition::Domain,
+        private:
+
+            /// Runtime provider Types in deterministic normalized family order.
+            using ProviderTypes = TypeList<
                 typename TPlans::RuntimeProvider...
             >;
+
+            /// Runtime provider Types with duplicate Types removed after first occurrence.
+            using UniqueProviderTypes = typename UniqueTypeList<
+                ProviderTypes
+            >::Type;
+
+
+        public:
+
+            /// Primitive Domain Composition consumable by System Architecture.
+            using Type = typename MakeCompositionFromProviders<
+                UniqueProviderTypes
+            >::Type;
 
         };
 
