@@ -1,0 +1,12 @@
+# EDP-Primitives
+
+- [Home](Home)
+- [Architecture](Architecture)
+- [Public API](Public-API)
+- [Internal API](Internal-API)
+- [Implementation](Implementation)
+- [Resources / Lifecycle / Concurrency](Resources-Lifecycle-Concurrency)
+- [Build / Test / Source](Build-Test-Source)
+- [Dependency Contracts](Dependency-Contracts)
+- [Reference Index](Reference-Index)
+- [Compiler Definitions](Compiler-Definitions)
