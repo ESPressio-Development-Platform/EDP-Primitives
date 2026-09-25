@@ -28,6 +28,4 @@ A family Planner may consume additional family-relevant dependencies, such as a 
 
 ## Workstream pin
 
-During `feature/primitives_introduction`, PlatformIO/library metadata intentionally consumes the matching EDP-System feature branch so the new Type-identity API is available.
-
-Permanent-branch dependency pins must be restored according to policy before reintegration.
+The Primitive-introduction workstream validated against the matching EDP-System feature implementation before reintegration. With that implementation now on `EDP-System/main`, permanent PlatformIO/library metadata consumes EDP-System from `main`.
