@@ -17,6 +17,8 @@ namespace ESPressio::Primitives {
 
 
         /// Completes family filtering for an empty declaration list.
+        ///
+        /// @tparam TFamily Family whose declarations are requested.
         template<class TFamily>
         struct FilterFamilyDeclarations<
             TFamily,
@@ -30,6 +32,10 @@ namespace ESPressio::Primitives {
 
 
         /// Filters one declaration and recursively filters the remainder.
+        ///
+        /// @tparam TFamily Family whose declarations are requested.
+        /// @tparam TFirst First deployment declaration being inspected.
+        /// @tparam TRest Remaining deployment declarations.
         template<
             class TFamily,
             class TFirst,
@@ -84,6 +90,8 @@ namespace ESPressio::Primitives {
 
 
         /// Extracts unique families in first-declaration order.
+        ///
+        /// @tparam TDeclarations Family-owned deployment declarations.
         template<class... TDeclarations>
         struct DeploymentFamilies<
             TypeList<TDeclarations...>
@@ -103,21 +111,14 @@ namespace ESPressio::Primitives {
         ///
         /// The family Planner contract is:
         ///
-        /// template<class TFamily, class TDeclarations, class TTransportSet>
+        /// template<class TFamily, class TDeclarations>
         /// using Plan = Primitives::FamilyPlan<...>;
-        ///
-        /// and for every normalized binding:
-        ///
-        /// template<class TPrimitive, class TTransport, DeploymentDirection TDirection>
-        /// static constexpr bool BindingEligible = ...;
         ///
         /// @tparam TFamily Family being planned.
         /// @tparam TDeclarations Complete declarations for that family.
-        /// @tparam TTransportSet Statically configured transport set.
         template<
             class TFamily,
-            class TDeclarations,
-            class TTransportSet
+            class TDeclarations
         >
         struct InvokeFamilyPlanner final {
 
@@ -128,8 +129,7 @@ namespace ESPressio::Primitives {
                 FamilyPlannerFor<
                     Planner,
                     TFamily,
-                    TDeclarations,
-                    TTransportSet
+                    TDeclarations
                 >,
                 "Family::Planner must satisfy the public FamilyPlannerFor extension contract"
             );
@@ -137,8 +137,7 @@ namespace ESPressio::Primitives {
             /// Raw canonical family plan emitted by the Planner.
             using RawPlan = typename Planner::template Plan<
                 TFamily,
-                TDeclarations,
-                TTransportSet
+                TDeclarations
             >;
 
             /// Validated canonical family plan.
@@ -154,24 +153,20 @@ namespace ESPressio::Primitives {
         ///
         /// @tparam TFamilies Unique family TypeList.
         /// @tparam TDeclarations Complete deployment declaration list.
-        /// @tparam TTransportSet Configured transport set.
         template<
             class TFamilies,
-            class TDeclarations,
-            class TTransportSet
+            class TDeclarations
         >
         struct BuildFamilyPlans;
 
 
         /// Completes planning for an empty family list.
-        template<
-            class TDeclarations,
-            class TTransportSet
-        >
+        ///
+        /// @tparam TDeclarations Complete deployment declaration list.
+        template<class TDeclarations>
         struct BuildFamilyPlans<
             TypeList<>,
-            TDeclarations,
-            TTransportSet
+            TDeclarations
         > final {
 
             /// Empty family-plan list.
@@ -181,16 +176,18 @@ namespace ESPressio::Primitives {
 
 
         /// Plans one family and recursively plans the remainder.
+        ///
+        /// @tparam TFirstFamily Current Primitive family.
+        /// @tparam TRestFamilies Remaining Primitive families.
+        /// @tparam TDeclarations Complete deployment declaration list.
         template<
             class TFirstFamily,
             class... TRestFamilies,
-            class TDeclarations,
-            class TTransportSet
+            class TDeclarations
         >
         struct BuildFamilyPlans<
             TypeList<TFirstFamily, TRestFamilies...>,
-            TDeclarations,
-            TTransportSet
+            TDeclarations
         > final {
 
         private:
@@ -201,18 +198,16 @@ namespace ESPressio::Primitives {
                 TDeclarations
             >::Type;
 
-            /// Current family's canonical plan.
+            /// Current family's canonical validated plan.
             using CurrentPlan = typename InvokeFamilyPlanner<
                 TFirstFamily,
-                FamilyDeclarations,
-                TTransportSet
+                FamilyDeclarations
             >::Type;
 
             /// Plans emitted for the remaining families.
             using RemainingPlans = typename BuildFamilyPlans<
                 TypeList<TRestFamilies...>,
-                TDeclarations,
-                TTransportSet
+                TDeclarations
             >::Type;
 
 
@@ -227,239 +222,9 @@ namespace ESPressio::Primitives {
         };
 
 
-        /// Expands and validates every common binding emitted by one family Planner.
+        /// Extracts the Primitive Type list from one family plan.
         ///
-        /// @tparam TPlan Canonical FamilyPlan.
-        /// @tparam TTransportSet Statically configured transport set.
-        template<class TPlan, class TTransportSet>
-        struct NormalizeFamilyPlan;
-
-
-        /// Validates one explicit normalized binding through the family Planner.
-        ///
-        /// @tparam TPlanner Family Planner owning eligibility policy.
-        /// @tparam TBinding Explicit normalized TransportBinding.
-        template<class TPlanner, class TBinding>
-        struct ValidateBinding;
-
-
-        /// Validates one concrete normalized binding.
-        template<
-            class TPlanner,
-            class TPrimitive,
-            class TTransport,
-            DeploymentDirection TDirection
-        >
-        struct ValidateBinding<
-            TPlanner,
-            TransportBinding<
-                TPrimitive,
-                TTransport,
-                TDirection
-            >
-        > final {
-
-            static_assert(
-                requires {
-                    TPlanner::template BindingEligible<
-                        TPrimitive,
-                        TTransport,
-                        TDirection
-                    >;
-                },
-                "Family::Planner must expose BindingEligible<Primitive, Transport, Direction>"
-            );
-
-            static_assert(
-                TPlanner::template BindingEligible<
-                    TPrimitive,
-                    TTransport,
-                    TDirection
-                >,
-                "Family::Planner rejected a requested Primitive transport binding"
-            );
-
-            /// Validated explicit binding.
-            using Type = TransportBinding<
-                TPrimitive,
-                TTransport,
-                TDirection
-            >;
-
-        };
-
-
-        /// Validates every binding in one explicit binding list.
-        ///
-        /// @tparam TPlanner Family Planner owning eligibility policy.
-        /// @tparam TBindings Explicit normalized bindings.
-        template<class TPlanner, class TBindings>
-        struct ValidateBindings;
-
-
-        /// Validates one concrete explicit binding pack.
-        template<class TPlanner, class... TBindings>
-        struct ValidateBindings<
-            TPlanner,
-            TypeList<TBindings...>
-        > final {
-
-            /// Validated bindings in deterministic order.
-            using Type = TypeList<
-                typename ValidateBinding<
-                    TPlanner,
-                    TBindings
-                >::Type...
-            >;
-
-        };
-
-
-        /// Normalized family plan after common binding expansion and eligibility validation.
-        ///
-        /// @tparam TFamily Primitive family.
-        /// @tparam TRuntimeProvider Canonical family runtime provider.
-        /// @tparam TPrimitiveTypes Deployed Primitive Types.
-        /// @tparam TBindings Explicit normalized transport bindings.
-        /// @tparam TResources Decomposed bounded resource plan.
-        template<
-            class TFamily,
-            class TRuntimeProvider,
-            class TPrimitiveTypes,
-            class TBindings,
-            class TResources
-        >
-        struct NormalizedFamilyPlan final {
-
-            /// Primitive family represented by this plan.
-            using Family = TFamily;
-
-            /// Canonical runtime provider for the family.
-            using RuntimeProvider = TRuntimeProvider;
-
-            /// Unique Primitive Types deployed by the family.
-            using PrimitiveTypes = TPrimitiveTypes;
-
-            /// Explicit normalized transport bindings.
-            using Bindings = TBindings;
-
-            /// Decomposed bounded resource plan.
-            using Resources = TResources;
-
-        };
-
-
-        /// Indicates whether every explicit binding targets a Primitive deployed by the same family plan.
-        ///
-        /// @tparam TPrimitiveTypes Primitive Types deployed by the family.
-        /// @tparam TBindings Explicit normalized transport bindings.
-        template<class TPrimitiveTypes, class TBindings>
-        struct BindingsTargetDeployedPrimitives;
-
-
-        /// Validates one explicit binding pack against the family's deployed Primitive list.
-        template<class TPrimitiveTypes, class... TBindings>
-        struct BindingsTargetDeployedPrimitives<
-            TPrimitiveTypes,
-            TypeList<TBindings...>
-        > final {
-
-            /// Indicates whether every binding targets a deployed Primitive Type.
-            static constexpr bool IsValid =
-                (TPrimitiveTypes::template Contains<typename TBindings::Primitive> && ...);
-
-        };
-
-
-        /// Normalizes one canonical family plan.
-        template<
-            class TFamily,
-            class TRuntimeProvider,
-            class TPrimitiveTypes,
-            class TBindingDeclarations,
-            class TResources,
-            class TTransportSet
-        >
-        struct NormalizeFamilyPlan<
-            FamilyPlan<
-                TFamily,
-                TRuntimeProvider,
-                TPrimitiveTypes,
-                TBindingDeclarations,
-                TResources
-            >,
-            TTransportSet
-        > final {
-
-        private:
-
-            /// Canonical Planner associated by the represented family.
-            using Planner = typename TFamily::Planner;
-
-            /// Explicit bindings after AllTransports/Bidirectional expansion.
-            using ExpandedBindings = typename ExpandDeploymentDeclarations<
-                TBindingDeclarations,
-                TTransportSet
-            >::Type;
-
-            static_assert(
-                !HasDuplicateTypes<ExpandedBindings>::Value,
-                "FamilyPlan contains duplicate transport bindings after normalization"
-            );
-
-            static_assert(
-                BindingsTargetDeployedPrimitives<
-                    TPrimitiveTypes,
-                    ExpandedBindings
-                >::IsValid,
-                "FamilyPlan transport bindings must target Primitive Types deployed by that same family plan"
-            );
-
-
-        public:
-
-            /// Fully normalized family plan.
-            using Type = NormalizedFamilyPlan<
-                TFamily,
-                TRuntimeProvider,
-                TPrimitiveTypes,
-                typename ValidateBindings<
-                    Planner,
-                    ExpandedBindings
-                >::Type,
-                TResources
-            >;
-
-        };
-
-
-        /// Normalizes every canonical family plan.
-        ///
-        /// @tparam TPlans Canonical FamilyPlan TypeList.
-        /// @tparam TTransportSet Statically configured transport set.
-        template<class TPlans, class TTransportSet>
-        struct NormalizeFamilyPlans;
-
-
-        /// Normalizes one concrete family-plan pack.
-        template<class... TPlans, class TTransportSet>
-        struct NormalizeFamilyPlans<
-            TypeList<TPlans...>,
-            TTransportSet
-        > final {
-
-            /// Normalized family plans in deterministic family order.
-            using Type = TypeList<
-                typename NormalizeFamilyPlan<
-                    TPlans,
-                    TTransportSet
-                >::Type...
-            >;
-
-        };
-
-
-        /// Extracts the Primitive Type list from one normalized family plan.
+        /// @tparam TPlan Canonical validated FamilyPlan.
         template<class TPlan>
         struct PlanPrimitiveTypes final {
 
@@ -469,19 +234,9 @@ namespace ESPressio::Primitives {
         };
 
 
-        /// Extracts the binding list from one normalized family plan.
-        template<class TPlan>
-        struct PlanBindings final {
-
-            /// Explicit bindings represented by the plan.
-            using Type = typename TPlan::Bindings;
-
-        };
-
-
         /// Concatenates one projected TypeList from every plan.
         ///
-        /// @tparam TPlans Normalized family plan TypeList.
+        /// @tparam TPlans FamilyPlan TypeList.
         /// @tparam TProjection Projection returning a nested Type.
         template<
             class TPlans,
@@ -491,6 +246,8 @@ namespace ESPressio::Primitives {
 
 
         /// Completes flattening for an empty family-plan list.
+        ///
+        /// @tparam TProjection Projection returning a nested Type.
         template<template<class> class TProjection>
         struct FlattenPlanLists<
             TypeList<>,
@@ -504,6 +261,10 @@ namespace ESPressio::Primitives {
 
 
         /// Concatenates the current projected list with recursively flattened remainder.
+        ///
+        /// @tparam TFirst First family plan.
+        /// @tparam TRest Remaining family plans.
+        /// @tparam TProjection Projection returning a nested Type.
         template<
             class TFirst,
             class... TRest,
@@ -526,6 +287,52 @@ namespace ESPressio::Primitives {
         };
 
 
+        /// Indicates whether one Primitive identifier differs from every identifier in a remaining list.
+        ///
+        /// @tparam TPrimitive Primitive Type whose universal identity is being compared.
+        /// @tparam TOtherPrimitives Other deployed Primitive Types.
+        template<class TPrimitive, class... TOtherPrimitives>
+        inline constexpr bool PrimitiveIdentifierUniqueAgainstV =
+            (
+                (
+                    System::TypeIdentifierOf<TPrimitive> !=
+                    System::TypeIdentifierOf<TOtherPrimitives>
+                ) &&
+                ... &&
+                true
+            );
+
+
+        /// Validates topology-wide universal Primitive identity uniqueness.
+        ///
+        /// @tparam TPrimitiveTypes Deployed Primitive TypeList.
+        template<class TPrimitiveTypes>
+        struct UniquePrimitiveIdentifiers;
+
+
+        /// Empty Primitive lists contain no identity collisions.
+        template<>
+        struct UniquePrimitiveIdentifiers<TypeList<>> : std::true_type {};
+
+
+        /// Validates the first Primitive identity against the remainder and continues recursively.
+        ///
+        /// @tparam TFirstPrimitive First deployed Primitive Type.
+        /// @tparam TRestPrimitives Remaining deployed Primitive Types.
+        template<class TFirstPrimitive, class... TRestPrimitives>
+        struct UniquePrimitiveIdentifiers<
+            TypeList<TFirstPrimitive, TRestPrimitives...>
+        > : std::bool_constant<
+            PrimitiveIdentifierUniqueAgainstV<
+                TFirstPrimitive,
+                TRestPrimitives...
+            > &&
+            UniquePrimitiveIdentifiers<
+                TypeList<TRestPrimitives...>
+            >::value
+        > {};
+
+
         /// Converts one runtime-provider TypeList to the Primitive System Composition.
         ///
         /// @tparam TProviders Unique canonical runtime provider Types.
@@ -533,7 +340,9 @@ namespace ESPressio::Primitives {
         struct MakeCompositionFromProviders;
 
 
-        /// Builds the existing System Composition from one concrete provider Type pack.
+        /// Builds the System Composition from one concrete provider Type pack.
+        ///
+        /// @tparam TProviders Canonical runtime provider Types.
         template<class... TProviders>
         struct MakeCompositionFromProviders<
             TypeList<TProviders...>
@@ -548,18 +357,20 @@ namespace ESPressio::Primitives {
         };
 
 
-        /// Converts normalized family plans to a Primitive Composition.
+        /// Converts family plans to a Primitive Composition.
         ///
         /// A provider Type may legitimately satisfy more than one family runtime capability.
         /// The Composition therefore contains each runtime provider Type once, while each
         /// FamilyPlan is still independently validated against its exact FamilyRuntime capability.
         ///
-        /// @tparam TPlans Normalized family plans.
+        /// @tparam TPlans Canonical validated family plans.
         template<class TPlans>
         struct MakePrimitiveComposition;
 
 
-        /// Builds the existing System Composition from unique canonical family runtime providers.
+        /// Builds the System Composition from unique canonical family runtime providers.
+        ///
+        /// @tparam TPlans Canonical validated family plans.
         template<class... TPlans>
         struct MakePrimitiveComposition<
             TypeList<TPlans...>
@@ -567,7 +378,7 @@ namespace ESPressio::Primitives {
 
         private:
 
-            /// Runtime provider Types in deterministic normalized family order.
+            /// Runtime provider Types in deterministic family order.
             using ProviderTypes = TypeList<
                 typename TPlans::RuntimeProvider...
             >;
@@ -588,14 +399,16 @@ namespace ESPressio::Primitives {
         };
 
 
-        /// Builds the family-neutral ResourcePlanSet retained by normalized Topology output.
+        /// Builds the family-neutral ResourcePlanSet retained by Topology output.
         ///
-        /// @tparam TPlans Normalized family plans.
+        /// @tparam TPlans Canonical validated family plans.
         template<class TPlans>
         struct MakeResourcePlanSet;
 
 
         /// Retains one independently decomposed ResourcePlan per family.
+        ///
+        /// @tparam TPlans Canonical validated family plans.
         template<class... TPlans>
         struct MakeResourcePlanSet<
             TypeList<TPlans...>
@@ -616,27 +429,17 @@ namespace ESPressio::Primitives {
 
     /// Compile-time Primitive deployment topology.
     ///
-    /// The first template argument is the statically configured TransportSet. Remaining
-    /// arguments are family-owned deployment declarations. No runtime object, registry,
-    /// allocation, wildcard, or discovery mechanism is created.
+    /// Arguments are family-owned deployment declarations. No runtime object, registry,
+    /// allocation, transport configuration, wildcard or discovery mechanism is created.
     ///
-    /// @tparam TTransportSet Statically configured concrete transports.
     /// @tparam TDeployments Family-owned deployment declarations.
-    template<class TTransportSet, class... TDeployments>
+    template<class... TDeployments>
     struct Topology final {
 
         static_assert(
-            Detail::TransportSetTraits<TTransportSet>::IsValid,
-            "Topology requires Primitives::TransportSet as its first template argument"
-        );
-
-        static_assert(
             (FamilyDeploymentDeclaration<TDeployments> && ...),
-            "Topology entries after TransportSet must be family-owned deployment declarations"
+            "Topology entries must be family-owned deployment declarations"
         );
-
-        /// Statically configured concrete transports.
-        using Transports = TTransportSet;
 
         /// Family-owned declarations in application declaration order.
         using Deployments = TypeList<TDeployments...>;
@@ -646,22 +449,15 @@ namespace ESPressio::Primitives {
             Deployments
         >::Type;
 
-        /// Canonical plans emitted by each family's directly associated Planner.
+        /// Canonical validated plans emitted by each family's directly associated Planner.
         using FamilyPlans = typename Detail::BuildFamilyPlans<
             Families,
-            Deployments,
-            Transports
-        >::Type;
-
-        /// Fully normalized family plans.
-        using NormalizedFamilyPlans = typename Detail::NormalizeFamilyPlans<
-            FamilyPlans,
-            Transports
+            Deployments
         >::Type;
 
         /// Every deployed Primitive Type across all families.
         using PrimitiveTypes = typename Detail::FlattenPlanLists<
-            NormalizedFamilyPlans,
+            FamilyPlans,
             Detail::PlanPrimitiveTypes
         >::Type;
 
@@ -670,30 +466,24 @@ namespace ESPressio::Primitives {
             "Topology must not deploy the same Primitive Type more than once"
         );
 
-        /// Every explicit normalized transport binding across all families.
-        using Bindings = typename Detail::FlattenPlanLists<
-            NormalizedFamilyPlans,
-            Detail::PlanBindings
-        >::Type;
-
         static_assert(
-            !Detail::HasDuplicateTypes<Bindings>::Value,
-            "Topology must not contain duplicate explicit bindings across family plans"
+            Detail::UniquePrimitiveIdentifiers<PrimitiveTypes>::value,
+            "Topology must not deploy distinct Primitive Types with the same System::TypeIdentifier"
         );
 
         /// Decomposed resource plans retained separately for every family.
         using Resources = typename Detail::MakeResourcePlanSet<
-            NormalizedFamilyPlans
+            FamilyPlans
         >::Type;
 
         /// Primitive Domain Composition built from exactly one runtime provider per family.
         using Composition = typename Detail::MakePrimitiveComposition<
-            NormalizedFamilyPlans
+            FamilyPlans
         >::Type;
 
         static_assert(
             Composition::IsValid,
-            "Normalized Primitive family runtime providers must form a valid System Composition"
+            "Primitive family runtime providers must form a valid System Composition"
         );
 
     };

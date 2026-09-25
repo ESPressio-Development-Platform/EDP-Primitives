@@ -2,7 +2,6 @@
 
 #include <type_traits>
 
-#include "Deployment.hpp"
 #include "PrimitiveComposition.hpp"
 #include "ResourcePlan.hpp"
 
@@ -21,18 +20,16 @@ namespace ESPressio::Primitives {
     } && PrimitiveFamilyType<typename TDeclaration::Family>;
 
 
-    /// Canonical family-planner output consumed by common Topology normalization.
+    /// Canonical family-planner output consumed by common Topology aggregation.
     ///
     /// @tparam TFamily Primitive family represented by this plan.
     /// @tparam TRuntimeProvider Exactly one canonical family runtime provider Type.
     /// @tparam TPrimitiveTypes Primitive semantic Types deployed for the family.
-    /// @tparam TBindings Common deployment declarations emitted by the family planner.
     /// @tparam TResources Decomposed bounded family resource plan.
     template<
         class TFamily,
         class TRuntimeProvider,
         class TPrimitiveTypes,
-        class TBindings,
         class TResources
     >
     struct FamilyPlan final {
@@ -53,9 +50,6 @@ namespace ESPressio::Primitives {
 
         /// Primitive semantic Types deployed by the family.
         using PrimitiveTypes = TPrimitiveTypes;
-
-        /// Common Inbound/Outbound/Bidirectional declarations emitted by the family planner.
-        using Bindings = TBindings;
 
         /// Decomposed bounded resource requirements owned by the family runtime.
         using Resources = TResources;
@@ -78,6 +72,8 @@ namespace ESPressio::Primitives {
 
 
         /// Extracts canonical FamilyPlan metadata.
+        ///
+        /// @tparam TPlan Candidate FamilyPlan Type exposing the canonical nested metadata.
         template<class TPlan>
         struct FamilyPlanTraits<
             TPlan,
@@ -86,7 +82,6 @@ namespace ESPressio::Primitives {
                 typename TPlan::Family,
                 typename TPlan::RuntimeProvider,
                 typename TPlan::PrimitiveTypes,
-                typename TPlan::Bindings,
                 typename TPlan::Resources
             >
         > final {
@@ -107,6 +102,9 @@ namespace ESPressio::Primitives {
 
 
         /// Validates one concrete Primitive Type pack.
+        ///
+        /// @tparam TFamily Expected Primitive family.
+        /// @tparam TPrimitives Primitive Types represented by the list.
         template<class TFamily, class... TPrimitives>
         struct PrimitiveListForFamily<
             TFamily,
@@ -135,6 +133,8 @@ namespace ESPressio::Primitives {
 
 
         /// Metadata for a concrete ResourcePlan.
+        ///
+        /// @tparam TRequirements ResourceRequirement declarations represented by the plan.
         template<class... TRequirements>
         struct ResourcePlanTraits<
             ResourcePlan<TRequirements...>
@@ -159,6 +159,8 @@ namespace ESPressio::Primitives {
 
 
         /// Metadata for a concrete TypeList.
+        ///
+        /// @tparam TTypes Types represented by the list.
         template<class... TTypes>
         struct TypeListTraits<
             TypeList<TTypes...>
@@ -170,7 +172,7 @@ namespace ESPressio::Primitives {
         };
 
 
-        /// Validates canonical planner output before normalization.
+        /// Validates canonical Planner output before Topology aggregation.
         ///
         /// @tparam TFamily Family whose Planner produced the output.
         /// @tparam TPlan Planner output Type.
@@ -201,11 +203,6 @@ namespace ESPressio::Primitives {
             );
 
             static_assert(
-                TypeListTraits<typename TPlan::Bindings>::IsValid,
-                "FamilyPlan Bindings must be Primitives::TypeList"
-            );
-
-            static_assert(
                 ResourcePlanTraits<typename TPlan::Resources>::IsValid,
                 "FamilyPlan Resources must be Primitives::ResourcePlan"
             );
@@ -228,36 +225,31 @@ namespace ESPressio::Primitives {
 
     /// Predicate identifying one canonical Planner implementation for a specific planning input.
     ///
-    /// A family Planner is associated directly through `Family::Planner`. Its `Plan` alias
-    /// receives the complete declaration set for that family plus the statically configured
-    /// TransportSet and must emit canonical FamilyPlan output.
+    /// A family Planner is associated directly through Family::Planner. Its Plan alias
+    /// receives the complete declaration set for that family and must emit canonical
+    /// Transport-independent FamilyPlan output.
     ///
     /// @tparam TPlanner Candidate Planner Type.
     /// @tparam TFamily Primitive family being planned.
     /// @tparam TDeclarations Complete family-owned deployment declaration TypeList.
-    /// @tparam TTransportSet Statically configured TransportSet.
     template<
         class TPlanner,
         class TFamily,
-        class TDeclarations,
-        class TTransportSet
+        class TDeclarations
     >
     concept FamilyPlannerFor =
         PrimitiveFamilyType<TFamily> &&
         Detail::TypeListTraits<TDeclarations>::IsValid &&
-        Detail::TransportSetTraits<TTransportSet>::IsValid &&
         requires {
             typename TPlanner::template Plan<
                 TFamily,
-                TDeclarations,
-                TTransportSet
+                TDeclarations
             >;
         } &&
         Detail::FamilyPlanTraits<
             typename TPlanner::template Plan<
                 TFamily,
-                TDeclarations,
-                TTransportSet
+                TDeclarations
             >
         >::IsValid;
 

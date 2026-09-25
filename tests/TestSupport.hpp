@@ -9,13 +9,6 @@ namespace ESPressio::Primitives::Tests::Support {
     namespace Framework = ESPressio::System::CompositionFramework;
 
 
-    /// First deterministic dummy transport used by topology tests.
-    struct TransportA final {};
-
-    /// Second deterministic dummy transport used by topology tests.
-    struct TransportB final {};
-
-
     struct TestPlanner;
 
 
@@ -119,55 +112,55 @@ namespace ESPressio::Primitives::Tests::Support {
     > {};
 
 
-    /// Dummy Planner exercising common normalization without depending on a real family repository.
+    /// Dummy Planner exercising common family planning without depending on a real family repository.
     struct TestPlanner final {
+
+        /// Validates the complete declaration set and exposes canonical plan output.
+        ///
+        /// @tparam TFamily Planned Primitive family.
+        /// @tparam TDeclarations Family-owned declarations grouped by Topology.
+        template<class TFamily, class TDeclarations>
+        struct PlanBuilder final {
+
+            static_assert(
+                TDeclarations::Count == 2U,
+                "Test Planner must receive the complete two-declaration family set"
+            );
+
+            static_assert(
+                TDeclarations::template Contains<DeploymentOne> &&
+                TDeclarations::template Contains<DeploymentTwo>,
+                "Test Planner must receive both family-owned declarations"
+            );
+
+            /// Canonical test family plan.
+            using Type = FamilyPlan<
+                TFamily,
+                TestRuntimeProvider,
+                TypeList<
+                    PrimitiveA,
+                    PrimitiveB
+                >,
+                ResourcePlan<
+                    ResourceRequirement<
+                        QueueSlots,
+                        8U
+                    >
+                >
+            >;
+
+        };
+
 
         /// Produces one canonical family plan from the complete family declaration set.
         ///
         /// @tparam TFamily Planned Primitive family.
         /// @tparam TDeclarations Family-owned declarations grouped by Topology.
-        /// @tparam TTransportSet Statically configured transport set.
-        template<
-            class TFamily,
-            class TDeclarations,
-            class TTransportSet
-        >
-        using Plan = FamilyPlan<
+        template<class TFamily, class TDeclarations>
+        using Plan = typename PlanBuilder<
             TFamily,
-            TestRuntimeProvider,
-            TypeList<
-                PrimitiveA,
-                PrimitiveB
-            >,
-            TypeList<
-                Bidirectional<
-                    PrimitiveA,
-                    AllTransports
-                >,
-                Outbound<
-                    PrimitiveB,
-                    TransportA
-                >
-            >,
-            ResourcePlan<
-                ResourceRequirement<
-                    QueueSlots,
-                    8U
-                >
-            >
-        >;
-
-        /// Accepts all bindings used by this generic contract test.
-        ///
-        /// A concrete family Planner can implement serialisability and other family-owned
-        /// compile-time eligibility rules here without introducing those dependencies into
-        /// EDP-Primitives.
-        template<
-            class TPrimitive,
-            class TTransport,
-            DeploymentDirection TDirection
-        >
-        static constexpr bool BindingEligible = true;
+            TDeclarations
+        >::Type;
 
     };
 

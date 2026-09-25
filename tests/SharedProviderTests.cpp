@@ -10,60 +10,80 @@ namespace ESPressio::Primitives::Tests::SharedProvider {
 
 
     struct FamilyA final {
+
         static constexpr PrimitiveFamilyIdentifier Identifier{
             System::TypeAuthorityIdentifier{
                 System::TypeAuthorityIdentifier::Storage{
-                    0x00U, 0x00U, 0x05U
+                    0x00U,
+                    0x00U,
+                    0x05U
                 }
             },
             0x01U
         };
+
         using Planner = PlannerA;
+
     };
 
 
     struct FamilyB final {
+
         static constexpr PrimitiveFamilyIdentifier Identifier{
             System::TypeAuthorityIdentifier{
                 System::TypeAuthorityIdentifier::Storage{
-                    0x00U, 0x00U, 0x05U
+                    0x00U,
+                    0x00U,
+                    0x05U
                 }
             },
             0x02U
         };
+
         using Planner = PlannerB;
+
     };
 
 
     struct PrimitiveA final {
+
         static constexpr System::TypeIdentifier Identifier{
             System::TypeIdentifier::Storage{
                 0x00U, 0x00U, 0x05U, 0x00U,
                 0x00U, 0x00U, 0x00U, 0x01U
             }
         };
+
         using Family = FamilyA;
+
     };
 
 
     struct PrimitiveB final {
+
         static constexpr System::TypeIdentifier Identifier{
             System::TypeIdentifier::Storage{
                 0x00U, 0x00U, 0x05U, 0x00U,
                 0x00U, 0x00U, 0x00U, 0x02U
             }
         };
+
         using Family = FamilyB;
+
     };
 
 
     struct DeploymentA final {
+
         using Family = FamilyA;
+
     };
 
 
     struct DeploymentB final {
+
         using Family = FamilyB;
+
     };
 
 
@@ -81,37 +101,32 @@ namespace ESPressio::Primitives::Tests::SharedProvider {
 
 
     struct PlannerA final {
-        template<class TFamily, class TDeclarations, class TTransportSet>
+
+        template<class TFamily, class TDeclarations>
         using Plan = FamilyPlan<
             TFamily,
             SharedRuntimeProvider,
             TypeList<PrimitiveA>,
-            TypeList<>,
             ResourcePlan<>
         >;
 
-        template<class TPrimitive, class TTransport, DeploymentDirection TDirection>
-        static constexpr bool BindingEligible = true;
     };
 
 
     struct PlannerB final {
-        template<class TFamily, class TDeclarations, class TTransportSet>
+
+        template<class TFamily, class TDeclarations>
         using Plan = FamilyPlan<
             TFamily,
             SharedRuntimeProvider,
             TypeList<PrimitiveB>,
-            TypeList<>,
             ResourcePlan<>
         >;
 
-        template<class TPrimitive, class TTransport, DeploymentDirection TDirection>
-        static constexpr bool BindingEligible = true;
     };
 
 
     using SharedTopology = Topology<
-        TransportSet<>,
         DeploymentA,
         DeploymentB
     >;
@@ -123,8 +138,8 @@ namespace ESPressio::Primitives::Tests::SharedProvider {
     );
 
     static_assert(
-        SharedTopology::NormalizedFamilyPlans::Count == 2U,
-        "Both normalized family plans must remain visible"
+        SharedTopology::FamilyPlans::Count == 2U,
+        "Both canonical family plans must remain visible"
     );
 
     static_assert(

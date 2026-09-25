@@ -40,12 +40,8 @@ namespace ESPressio::Primitives::Tests {
     );
 
 
-    /// Topology containing two family-owned declarations and two configured transports.
+    /// Topology containing two family-owned declarations.
     using TestTopology = Topology<
-        TransportSet<
-            Support::TransportA,
-            Support::TransportB
-        >,
         Support::DeploymentOne,
         Support::DeploymentTwo
     >;
@@ -53,7 +49,7 @@ namespace ESPressio::Primitives::Tests {
 
     static_assert(
         TestTopology::Families::Count == 1U,
-        "Two declarations from one family must normalize to one family plan"
+        "Two declarations from one family must produce one family plan"
     );
 
     static_assert(
@@ -62,51 +58,8 @@ namespace ESPressio::Primitives::Tests {
     );
 
     static_assert(
-        TestTopology::NormalizedFamilyPlans::Count == 1U,
-        "Exactly one normalized family plan is expected"
-    );
-
-    static_assert(
         TestTopology::PrimitiveTypes::Count == 2U,
         "Both deployed Primitive Types must appear exactly once"
-    );
-
-    static_assert(
-        TestTopology::Bindings::Count == 5U,
-        "Bidirectional AllTransports over two transports plus one outbound binding must normalize to five bindings"
-    );
-
-    static_assert(
-        TestTopology::Bindings::template Contains<
-            TransportBinding<
-                Support::PrimitiveA,
-                Support::TransportA,
-                DeploymentDirection::Inbound
-            >
-        >,
-        "PrimitiveA must expose inbound TransportA"
-    );
-
-    static_assert(
-        TestTopology::Bindings::template Contains<
-            TransportBinding<
-                Support::PrimitiveA,
-                Support::TransportB,
-                DeploymentDirection::Outbound
-            >
-        >,
-        "PrimitiveA must expose outbound TransportB"
-    );
-
-    static_assert(
-        TestTopology::Bindings::template Contains<
-            TransportBinding<
-                Support::PrimitiveB,
-                Support::TransportA,
-                DeploymentDirection::Outbound
-            >
-        >,
-        "PrimitiveB must expose the explicitly requested outbound transport"
     );
 
     static_assert(
@@ -122,6 +75,25 @@ namespace ESPressio::Primitives::Tests {
     static_assert(
         TestTopology::Composition::IsValid,
         "Generated Primitive Domain Composition must satisfy the existing System Composition model"
+    );
+
+
+    /// Empty Primitive topology proving that optional Primitive deployment compiles away.
+    using EmptyTopology = Topology<>;
+
+
+    static_assert(
+        EmptyTopology::Families::Count == 0U &&
+        EmptyTopology::FamilyPlans::Count == 0U &&
+        EmptyTopology::PrimitiveTypes::Count == 0U &&
+        EmptyTopology::Resources::Count == 0U,
+        "Empty Primitive topology must retain no family, Primitive, or resource declarations"
+    );
+
+    static_assert(
+        EmptyTopology::Composition::ProviderCount == 0U &&
+        EmptyTopology::Composition::IsValid,
+        "Empty Primitive topology must produce a valid zero-provider Primitive Composition"
     );
 
 
@@ -168,7 +140,7 @@ namespace ESPressio::Primitives::Tests {
 } // ESPressio::Primitives::Tests
 
 
-/// Executes host-side Stage 1 Primitive foundation tests.
+/// Executes host-side Primitive foundation tests.
 int main() {
     return ESPressio::Primitives::Tests::RunPrimitivesTests();
 }
