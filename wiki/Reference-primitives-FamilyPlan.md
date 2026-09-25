@@ -2,78 +2,66 @@
 
 **Primary classification:** PUBLIC FAMILY EXTENSION API with PRIVATE IMPLEMENTATION validation helpers
 
-**Source baseline:** `f72501ec19ceb95295c4586ba74488acfa9ad9c9`
+**Source baseline:** `b2dc70330de942be39e526a8646b7cd2d5e07cad`
 
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/f72501ec19ceb95295c4586ba74488acfa9ad9c9/src/primitives/FamilyPlan.hpp)
+[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/b2dc70330de942be39e526a8646b7cd2d5e07cad/src/primitives/FamilyPlan.hpp)
 
 ## Public API
 
 ### `FamilyDeploymentDeclaration<TDeclaration>`
 
-Predicate requiring a family-owned declaration to expose a nested valid `Family`.
+Requires a family-owned declaration to expose a nested valid `Family`.
 
-EDP-Primitives deliberately does not inspect the declaration's family-specific payload.
+The declaration's family-specific payload remains opaque to EDP-Primitives.
 
-### `FamilyPlan<TFamily, TRuntimeProvider, TPrimitiveTypes, TBindings, TResources>`
+### `FamilyPlan<TFamily, TRuntimeProvider, TPrimitiveTypes, TResources>`
 
 Canonical output contract of a family Planner.
 
-Public aliases:
+Template parameters:
 
-- `Family`;
-- `RuntimeProvider`;
-- `PrimitiveTypes`;
-- `Bindings`;
-- `Resources`;
-- marker `FamilyPlanTag`.
+- `TFamily` — represented Primitive family;
+- `TRuntimeProvider` — canonical Provider Type supplying that family's runtime capability;
+- `TPrimitiveTypes` — TypeList of locally represented/deployed Primitive semantic Types;
+- `TResources` — decomposed family ResourcePlan.
 
-The template itself validates the represented Family.
+Public aliases are `Family`, `RuntimeProvider`, `PrimitiveTypes`, `Resources`, plus marker `FamilyPlanTag`.
 
-### `FamilyPlannerFor<TPlanner, TFamily, TDeclarations, TTransportSet>`
+No Transport binding metadata belongs to FamilyPlan.
+
+### `FamilyPlannerFor<TPlanner, TFamily, TDeclarations>`
 
 Maintained public Planner-extension predicate.
 
-For the concrete planning input, the Planner must expose:
+For the concrete planning input the Planner must expose:
 
 ```cpp
-template<class TFamily, class TDeclarations, class TTransportSet>
+template<class TFamily, class TDeclarations>
 using Plan = /* canonical FamilyPlan */;
 ```
 
-The Planner's normalized binding eligibility surface is separately consumed by Topology:
-
-```cpp
-template<class TPrimitive, class TTransport, DeploymentDirection TDirection>
-static constexpr bool BindingEligible = /* ... */;
-```
+`TDeclarations` is the complete family-owned declaration list in application order.
 
 ## Private implementation
 
 ### `FamilyPlanTraits`
 
-Detects canonical plan metadata.
+Recognizes canonical FamilyPlan metadata.
 
 ### `PrimitiveListForFamily`
 
-Requires unique valid Primitive Types all belonging to the planned family.
+Requires unique valid Primitive Types, each belonging to the exact planned family.
 
 ### `ResourcePlanTraits`
 
-Detects common ResourcePlan output.
+Recognizes common ResourcePlan output.
 
 ### `TypeListTraits`
 
-Detects common TypeList output.
+Recognizes common TypeList output.
 
 ### `ValidateFamilyPlan`
 
-Checks:
+Validates canonical shape, exact Family match, Primitive list shape/membership/uniqueness, ResourcePlan shape, and exact `Composition::FamilyRuntime<TFamily>` provider capability.
 
-- canonical FamilyPlan shape;
-- exact Family match;
-- TypeList shape for PrimitiveTypes/Bindings;
-- Primitive uniqueness and family membership;
-- ResourcePlan shape;
-- runtime Provider offering the exact `Composition::FamilyRuntime<TFamily>`.
-
-Detail helpers are validators only and are not specialization points.
+These Detail helpers are validators only and are not external specialization points.

@@ -1,6 +1,6 @@
 # EDP-Primitives Dependency Graph
 
-> Baseline: 2026-09-24 — Stage 1 common Primitive foundation.
+> Baseline: 2026-09-25 — Transport-independent Primitive family foundation.
 
 ## Library Dependency Tree
 
@@ -18,25 +18,24 @@ EDP-System supplies:
 - universal `TypeAuthorityIdentifier` and `TypeIdentifier`;
 - `IdentifiedType<T>` / `TypeIdentifierOf<T>`;
 - the compile-time Composition Framework;
-- ordinary `Provider`, `Offer`, `Contract`, `Composition`, and `Architecture` vocabulary used by the Primitive runtime-provider integration.
+- `Provider`, `Offer`, `Contract`, `Composition`, and `Architecture` vocabulary used by Primitive family runtime integration.
 
 ## Explicit non-dependencies
 
-Stage 1 intentionally has **no** production dependency on:
+EDP-Primitives intentionally has **no** production dependency on:
 
+- any Transport or radio repository;
 - EDP-Serialisation;
-- any transport repository;
 - EDP-Command;
-- EDP-Event;
-- EDP-State;
+- Event or State family repositories;
 - EDP-Memory;
 - EDP-Threading;
 - Arduino, ESP-IDF, or another platform SDK.
 
-Transport Types are compile-time opaque Types to EDP-Primitives. Family Planners own binding eligibility, allowing future family libraries to consume Serialisation or other relevant capabilities without reversing those dependencies into the common Primitive foundation.
+Transport directionality and cross-domain bindings are outside the Primitive family plan. Integration libraries express their own compile-time declarations and satisfy family-specific contracts through normal System Composition.
 
 ## Runtime dependency behaviour
 
-The library introduces no runtime dependency resolver, registry, discovery mechanism, heap allocator, or provider ownership.
+The library introduces no runtime dependency resolver, registry, discovery mechanism, heap allocator, mutable topology or provider ownership.
 
-`Topology::Composition` is an ordinary EDP-System Composition. Application Bootstrap owns concrete runtime provider instances exactly as it does for other EDP-System Composition Domains.
+`Topology::Composition` is an ordinary EDP-System Composition. Application Bootstrap owns concrete provider objects. Once complete application initialization succeeds, the resolved application topology is immutable for that runtime instance.

@@ -6,20 +6,17 @@ Given:
 
 ```cpp
 Topology<
-    TransportSet<A, B>,
     FamilyOneDeclarationA,
     FamilyOneDeclarationB,
     FamilyTwoDeclaration
 >
 ```
 
-the implementation performs these deterministic compile-time stages.
+the implementation performs deterministic compile-time stages.
 
 ### 1. Validate application declarations
 
-The first argument must be a `TransportSet`.
-
-Every remaining Type must satisfy `FamilyDeploymentDeclaration`.
+Every Type must satisfy `FamilyDeploymentDeclaration`.
 
 ### 2. Discover family order
 
@@ -34,41 +31,39 @@ Every family receives all of its declarations, preserving application order.
 `Family::Planner` is invoked once with:
 
 - the Family;
-- the complete family declaration `TypeList`;
-- the static `TransportSet`.
+- the complete family declaration `TypeList`.
 
-The result must satisfy `FamilyPlannerFor` and emit `FamilyPlan`.
+The output must satisfy `FamilyPlannerFor` and emit a canonical `FamilyPlan`.
 
 ### 5. Validate family plan
 
 Checks include:
 
 - plan Family matches invocation Family;
-- deployed Primitive Types are unique;
+- PrimitiveTypes is a TypeList;
 - every Primitive belongs to the represented Family;
+- Primitive Types are unique inside the family plan;
 - runtime Provider supplies the exact `FamilyRuntime<Family>` capability;
 - resource output is a common `ResourcePlan`.
 
-### 6. Normalize bindings
+### 6. Build global Primitive view
 
-`AllTransports` and `Bidirectional` are expanded.
+Primitive lists are flattened across FamilyPlans.
 
-The implementation rejects:
+The topology rejects:
 
-- unconfigured concrete transports;
-- duplicate explicit bindings;
-- bindings targeting Primitives not deployed in the family plan;
-- bindings rejected by `Planner::BindingEligible`.
+- the same Primitive C++ Type appearing more than once;
+- distinct Primitive Types carrying the same universal `System::TypeIdentifier`.
 
-### 7. Build global normalized views
+### 7. Retain family resources
 
-Primitive and binding lists are flattened across family plans.
-
-Cross-family duplicates are rejected.
+Each FamilyPlan's decomposed ResourcePlan is retained independently through `ResourcePlanSet`. No universal total is inferred.
 
 ### 8. Build Composition
 
-Exactly one runtime Provider Type is selected by each family plan. Identical Provider Types are de-duplicated after family validation, so one concrete Provider may intentionally satisfy multiple family runtime capabilities and appears once in:
+Exactly one runtime Provider Type is selected by each FamilyPlan.
+
+Identical Provider Types are de-duplicated after family validation, so one concrete Provider may intentionally satisfy multiple family runtime capabilities and appears once in:
 
 ```cpp
 System::CompositionFramework::Composition<
@@ -77,10 +72,10 @@ System::CompositionFramework::Composition<
 >
 ```
 
-System Composition performs its ordinary Contract and exclusive-capability validation.
+## No second normalization layer
+
+Validated FamilyPlan output is already canonical. There is no `NormalizedFamilyPlan` stage because EDP-Primitives performs no family-neutral Transport binding expansion after Planner output.
 
 ## Runtime footprint
 
-Topology itself has no runtime object.
-
-The library creates no hidden registration object, heap allocation, mutex, provider instance, or service locator.
+Topology itself has no runtime object and creates no hidden registration object, heap allocation, mutex, Provider instance, service locator or freeze flag.

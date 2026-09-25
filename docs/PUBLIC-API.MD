@@ -12,59 +12,26 @@ Narrow headers under `src/primitives/` may also be included directly when only o
 
 ### `PrimitiveFamilyIdentifier`
 
-Exact four-byte family identity.
-
-Construction requires:
-
-- strong `System::TypeAuthorityIdentifier`;
-- explicit non-zero `std::uint8_t` family-local value.
-
-The Type exposes packed `Value()`, strong `Authority()`, `LocalValue()`, `IsZero()`, `IsValid()`, explicit Boolean conversion, equality, inequality, and deterministic ordering.
+Exact four-byte Primitive-family identity formed from a three-byte System Type Authority plus one authority-local family byte.
 
 ### `PrimitiveFamilyType<T>`
 
-Validates a family tag containing:
-
-- exact constant-expression `PrimitiveFamilyIdentifier Identifier`;
-- non-zero Authority and local family value;
-- nested canonical `Planner` Type.
+Validates a family tag containing a constant valid `PrimitiveFamilyIdentifier` and a canonical nested `Planner` Type.
 
 ### `PrimitiveType<T>`
 
-Requires:
-
-- `System::IdentifiedType<T>`;
-- nested `Family`;
-- `PrimitiveFamilyType<Family>`.
+Requires a valid universal `System::IdentifiedType<T>`, nested `Family`, and valid Primitive family.
 
 ### Readers
 
 - `PrimitiveFamilyOf<T>`;
 - `PrimitiveFamilyIdentifierOf<T>`.
 
-## Deployment
-
-### `TransportSet<T...>`
-
-Static concrete transport set. Duplicate Types and `AllTransports` itself are rejected.
-
-### `Inbound`, `Outbound`, `Bidirectional`
-
-Compile-time binding declarations. `Bidirectional` is sugar only.
-
-### `AllTransports`
-
-Compile-time transport selector expanded over the current `TransportSet`. It is not retained as a normalized binding.
-
-### `TransportBinding`
-
-Explicit normalized binding containing Primitive Type, concrete transport Type, and `DeploymentDirection`.
-
 ## Resource planning
 
 ### `ResourceRequirement<Tag, Capacity>`
 
-One bounded semantic resource dimension.
+One bounded semantic family resource dimension.
 
 ### `ResourcePlan<...>`
 
@@ -72,58 +39,57 @@ One family's decomposed bounded requirements. Duplicate resource tags are reject
 
 ### `ResourcePlanSet<...>`
 
-Topology-level aggregation retaining each family's plan independently.
+Topology-level aggregation retaining each represented family's resource plan independently.
 
-## Planner extension
+## Family extension contract
 
 ### `FamilyDeploymentDeclaration<T>`
 
-Requires a nested valid `Family` Type.
+Requires a nested valid `Family`. The declaration payload remains opaque to EDP-Primitives.
 
-### `FamilyPlan<...>`
+### `FamilyPlan<TFamily, TRuntimeProvider, TPrimitiveTypes, TResources>`
 
-Canonical family Planner output.
+Canonical family Planner output containing only the represented Family, canonical runtime provider, deployed Primitive Type list, and family-owned ResourcePlan.
 
-### `FamilyPlannerFor<...>`
+### `FamilyPlannerFor<TPlanner, TFamily, TDeclarations>`
 
-Public maintained concept describing the canonical Planner `Plan` alias for one concrete planning input.
+Maintained extension predicate requiring:
 
-The Planner must additionally expose `BindingEligible<Primitive, Transport, Direction>` for every emitted normalized binding.
+```cpp
+template<class TFamily, class TDeclarations>
+using Plan = /* canonical FamilyPlan */;
+```
+
+The complete family declaration set is supplied in original application order.
 
 ## Composition
 
-### `Primitives::Composition::Domain`
+- `Primitives::Composition::Domain`;
+- `Primitives::Composition::FamilyRuntime<TFamily>`;
+- `Primitives::Composition::FamilyRuntimeProvider<TProvider, TFamily>`.
 
-Focused EDP-System Composition Domain for Primitive family runtimes.
-
-### `Primitives::Composition::FamilyRuntime<TFamily>`
-
-Exclusive capability associated with one Primitive family.
-
-### `Primitives::Composition::FamilyRuntimeProvider<TProvider, TFamily>`
-
-Predicate validating the runtime provider relationship.
+Each family plan names exactly one provider satisfying its exclusive family-runtime capability.
 
 ## Topology
 
 ```cpp
 Topology<
-    TransportSet<TransportA, TransportB>,
     FamilyOwnedDeploymentA,
     FamilyOwnedDeploymentB
 >
 ```
 
-Important outputs:
+Outputs:
 
-- `Transports`;
 - `Deployments`;
 - `Families`;
 - `FamilyPlans`;
-- `NormalizedFamilyPlans`;
 - `PrimitiveTypes`;
-- `Bindings`;
 - `Resources`;
 - `Composition`.
 
-All output is compile-time metadata.
+All output is compile-time metadata. Topology rejects duplicate Primitive Types and universal TypeIdentifier collisions.
+
+## Deliberate exclusions
+
+EDP-Primitives provides no Transport set, inbound/outbound binding vocabulary, integration registry, runtime mutation API, or service locator. Cross-domain integration belongs to the owning integration domain and System Composition.

@@ -1,13 +1,16 @@
 # Primitive Topology Basic
 
-This demonstration intentionally uses dummy transport and Primitive-family Types so it exercises only the Stage 1 common contracts.
+This demonstration exercises only the family-neutral EDP-Primitives contracts.
 
-There is no Serialisation, network, Command, Event, State, Memory, Threading, or platform-specific runtime dependency in the demonstrated Primitive architecture.
+It declares one Primitive family, two semantic Primitive Types, one family-owned deployment declaration, one bounded resource dimension, one canonical family Planner, and one family runtime Provider.
 
-Expected normalized binding count is five:
+The resulting `Topology::Composition` is inserted directly into a normal EDP-System `Architecture`.
 
-- StartSignal inbound TransportA;
-- StartSignal inbound TransportB;
-- StartSignal outbound TransportA;
-- StartSignal outbound TransportB;
-- StopSignal outbound TransportA.
+There is deliberately no Transport, Serialisation, network, Command, Event, State, Memory, Threading, or platform-specific runtime dependency in the demonstrated Primitive architecture.
+
+Runtime checks confirm:
+
+- the family identifier is valid;
+- exactly two Primitive Types are deployed;
+- exactly one family resource plan is retained;
+- exactly one runtime Provider appears in Primitive Composition.

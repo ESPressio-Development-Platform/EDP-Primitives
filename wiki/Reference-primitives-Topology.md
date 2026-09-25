@@ -1,115 +1,62 @@
 # src/primitives/Topology.hpp
 
-**Primary classification:** PUBLIC TOPOLOGY API with PRIVATE IMPLEMENTATION normalization pipeline
+**Primary classification:** PUBLIC TOPOLOGY API with PRIVATE IMPLEMENTATION aggregation/validation pipeline
 
-**Source baseline:** `4aba3b000bfc896f243d11e19b724bf3da12287e`
+**Source baseline:** `b2dc70330de942be39e526a8646b7cd2d5e07cad`
 
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/4aba3b000bfc896f243d11e19b724bf3da12287e/src/primitives/Topology.hpp)
+[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/b2dc70330de942be39e526a8646b7cd2d5e07cad/src/primitives/Topology.hpp)
 
-## `Topology<TTransportSet, TDeployments...>`
+## `Topology<TDeployments...>`
 
-Compile-time application Primitive topology.
+Compile-time Primitive deployment topology.
 
-The first template argument must be `TransportSet`. Remaining Types must satisfy `FamilyDeploymentDeclaration`.
+Every template argument must satisfy `FamilyDeploymentDeclaration`.
+
+Topology is metadata only; it allocates no runtime object and contains no Transport configuration.
 
 ### Public outputs
 
-#### `Transports`
+- `Deployments` — original family-owned declarations in application order;
+- `Families` — unique represented families in first-declaration order;
+- `FamilyPlans` — one canonical validated Planner result per represented family;
+- `PrimitiveTypes` — flattened deployed Primitive Types;
+- `Resources` — ResourcePlanSet retaining one independent plan per family;
+- `Composition` — ordinary EDP-System Composition built from canonical family runtime Providers.
 
-Static configured transport set.
-
-#### `Deployments`
-
-Original family-owned deployment declarations in application order.
-
-#### `Families`
-
-Unique represented families in first-declaration order.
-
-#### `FamilyPlans`
-
-Canonical Planner output, one per family.
-
-#### `NormalizedFamilyPlans`
-
-Family plans after common binding expansion and eligibility validation.
-
-#### `PrimitiveTypes`
-
-Flattened deployed Primitive Types across all families. Cross-family duplicate Types are rejected.
-
-#### `Bindings`
-
-Flattened explicit normalized TransportBindings. Cross-family duplicates are rejected.
-
-#### `Resources`
-
-`ResourcePlanSet` retaining one independent decomposed resource plan per family.
-
-#### `Composition`
-
-Ordinary EDP-System Composition built from exactly one runtime Provider Type per family.
-
-The generated Composition must itself report `IsValid`.
+Topology rejects duplicate Primitive C++ Types and distinct Primitive Types sharing one universal `System::TypeIdentifier`.
 
 ## Private pipeline
 
 ### `FilterFamilyDeclarations`
 
-Collects all application declarations belonging to one Family.
+Collects all application declarations belonging to one Family while preserving application order.
 
-### `DeploymentFamily`
+### `DeploymentFamily` / `DeploymentFamilies`
 
-Extracts one declaration's nested Family.
-
-### `DeploymentFamilies`
-
-Builds the unique family list.
+Extract declaration family metadata and build the unique first-occurrence family list.
 
 ### `InvokeFamilyPlanner`
 
-Validates `FamilyPlannerFor`, invokes the direct `Family::Planner`, and validates canonical FamilyPlan output.
+Validates `FamilyPlannerFor`, invokes the direct `Family::Planner`, and validates FamilyPlan output.
 
 ### `BuildFamilyPlans`
 
-Invokes each family once with its complete grouped declaration set.
+Invokes each represented family exactly once with its complete grouped declaration set.
 
-### `ValidateBinding`
+### `PlanPrimitiveTypes` / `FlattenPlanLists`
 
-Requires the Planner's `BindingEligible<Primitive, Transport, Direction>` contract and rejects false eligibility.
+Project and concatenate deployed Primitive TypeLists in deterministic family order.
 
-### `ValidateBindings`
+### `PrimitiveIdentifierUniqueAgainstV` / `UniquePrimitiveIdentifiers`
 
-Applies binding validation to a complete normalized list.
-
-### `BindingsTargetDeployedPrimitives`
-
-Ensures every explicit binding refers to a Primitive in the same family plan's deployed Primitive list.
-
-### `NormalizedFamilyPlan`
-
-Internal normalized representation retaining Family, RuntimeProvider, PrimitiveTypes, explicit Bindings and Resources.
-
-### `NormalizeFamilyPlan`
-
-Expands common deployment sugar, rejects duplicate bindings, checks target deployment membership and applies Planner eligibility.
-
-### `NormalizeFamilyPlans`
-
-Normalizes all family plans.
-
-### `PlanPrimitiveTypes` / `PlanBindings`
-
-Projection helpers for topology-wide flattening.
-
-### `FlattenPlanLists`
-
-Deterministically concatenates projected TypeLists.
+Compare canonical `System::TypeIdentifierOf<T>` values and reject topology-wide semantic identity collisions without a runtime registry.
 
 ### `MakePrimitiveComposition`
 
-Builds the normal EDP-System Composition from family runtime Providers. Identical Provider Types are de-duplicated after each family plan has independently validated the exact FamilyRuntime capability it requires.
+Builds the Primitive EDP-System Composition. Identical Provider Types are de-duplicated after each FamilyPlan has independently validated its required FamilyRuntime capability.
 
 ### `MakeResourcePlanSet`
 
 Retains independent FamilyResources entries without inferring a universal total.
+
+There is deliberately no binding normalization stage.

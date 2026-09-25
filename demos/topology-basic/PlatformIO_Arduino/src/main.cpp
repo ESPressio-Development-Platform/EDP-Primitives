@@ -12,16 +12,10 @@ namespace Demo {
     enum class DemoResult : std::uint8_t {
         Succeeded = 0U,
         FamilyIdentityInvalid = 1U,
-        UnexpectedBindingCount = 2U,
-        UnexpectedProviderCount = 3U
+        UnexpectedPrimitiveCount = 2U,
+        UnexpectedResourceFamilyCount = 3U,
+        UnexpectedProviderCount = 4U
     };
-
-
-    /// First dummy transport configured by the application.
-    struct TransportA final {};
-
-    /// Second dummy transport configured by the application.
-    struct TransportB final {};
 
 
     struct Planner;
@@ -121,24 +115,17 @@ namespace Demo {
     /// Family-owned compile-time Planner.
     struct Planner final {
 
-        /// Converts the complete family declaration set to common normalized vocabulary.
-        template<class TFamily, class TDeclarations, class TTransportSet>
+        /// Converts the complete family declaration set to canonical family output.
+        ///
+        /// @tparam TFamily Planned Primitive family.
+        /// @tparam TDeclarations Complete family-owned declaration set.
+        template<class TFamily, class TDeclarations>
         using Plan = Primitives::FamilyPlan<
             TFamily,
             RuntimeProvider,
             Primitives::TypeList<
                 StartSignal,
                 StopSignal
-            >,
-            Primitives::TypeList<
-                Primitives::Bidirectional<
-                    StartSignal,
-                    Primitives::AllTransports
-                >,
-                Primitives::Outbound<
-                    StopSignal,
-                    TransportA
-                >
             >,
             Primitives::ResourcePlan<
                 Primitives::ResourceRequirement<
@@ -148,23 +135,11 @@ namespace Demo {
             >
         >;
 
-        /// Accepts the demonstration's requested transport bindings.
-        template<
-            class TPrimitive,
-            class TTransport,
-            Primitives::DeploymentDirection TDirection
-        >
-        static constexpr bool BindingEligible = true;
-
     };
 
 
     /// Application Primitive topology.
     using ApplicationTopology = Primitives::Topology<
-        Primitives::TransportSet<
-            TransportA,
-            TransportB
-        >,
         Deployment
     >;
 
@@ -187,8 +162,12 @@ namespace Demo {
             return DemoResult::FamilyIdentityInvalid;
         }
 
-        if (ApplicationTopology::Bindings::Count != 5U) {
-            return DemoResult::UnexpectedBindingCount;
+        if (ApplicationTopology::PrimitiveTypes::Count != 2U) {
+            return DemoResult::UnexpectedPrimitiveCount;
+        }
+
+        if (ApplicationTopology::Resources::Count != 1U) {
+            return DemoResult::UnexpectedResourceFamilyCount;
         }
 
         if (ApplicationTopology::Composition::ProviderCount != 1U) {

@@ -2,86 +2,60 @@
 
 ## Identity and classification
 
-### `PrimitiveFamilyIdentifier`
-
-Strong exact four-byte family identity.
-
-### `PrimitiveFamilyType<T>`
-
-Valid family tag predicate.
-
-### `PrimitiveType<T>`
-
-Valid semantic Primitive predicate.
-
-### Readers
-
-- `PrimitiveFamilyOf<T>`
-- `PrimitiveFamilyIdentifierOf<T>`
-
-## Deployment
-
-### `TransportSet<T...>`
-
-Static concrete transport population.
-
-### `Inbound<Primitive, Transport>`
-
-Explicit inbound exposure.
-
-### `Outbound<Primitive, Transport>`
-
-Explicit outbound exposure.
-
-### `Bidirectional<Primitive, Transport>`
-
-Compile-time sugar for inbound plus outbound exposure.
-
-### `AllTransports`
-
-Compile-time sugar selecting every concrete transport in the current `TransportSet`.
-
-### `TransportBinding<...>`
-
-Explicit normalized Primitive/transport/direction relationship.
+- `PrimitiveFamilyIdentifier` — exact four-byte family identity.
+- `PrimitiveFamilyType<T>` — valid Primitive-family predicate.
+- `PrimitiveType<T>` — universally identified semantic Primitive predicate.
+- `PrimitiveFamilyOf<T>` / `PrimitiveFamilyIdentifierOf<T>` — canonical family readers.
 
 ## Resource planning
 
-- `ResourceRequirement<Tag, Capacity>`
-- `ResourcePlan<...>`
-- `FamilyResources<Family, Plan>`
-- `ResourcePlanSet<...>`
+- `ResourceRequirement<Tag, Capacity>`;
+- `ResourcePlan<...>`;
+- `FamilyResources<Family, Plan>`;
+- `ResourcePlanSet<...>`.
+
+Resource tags remain family-owned and semantically distinct.
 
 ## Family extension contract
 
 ### `FamilyDeploymentDeclaration<T>`
 
-Requires a nested valid `Family`.
+Requires a nested valid `Family`. EDP-Primitives does not inspect family-specific payload.
 
-### `FamilyPlan<...>`
+### `FamilyPlan<TFamily, TRuntimeProvider, TPrimitiveTypes, TResources>`
 
-Canonical family Planner output.
+Canonical Planner output containing Family, runtime Provider, deployed Primitive Types and ResourcePlan.
 
-### `FamilyPlannerFor<...>`
+### `FamilyPlannerFor<TPlanner, TFamily, TDeclarations>`
 
-Public Planner contract predicate.
+Requires the canonical Planner alias:
+
+```cpp
+template<class TFamily, class TDeclarations>
+using Plan = /* FamilyPlan */;
+```
 
 ## Composition
 
-- `Primitives::Composition::Domain`
-- `Primitives::Composition::FamilyRuntime<TFamily>`
-- `Primitives::Composition::FamilyRuntimeProvider<TProvider, TFamily>`
+- `Primitives::Composition::Domain`;
+- `Primitives::Composition::FamilyRuntime<TFamily>`;
+- `Primitives::Composition::FamilyRuntimeProvider<TProvider, TFamily>`.
 
 ## Topology
 
-`Topology<TransportSet<...>, FamilyDeployment...>` is the application compile-time entry point.
+`Topology<FamilyDeployment...>` is the application compile-time Primitive entry point.
 
-Important normalized outputs:
+Outputs:
 
-- `Families`
-- `FamilyPlans`
-- `NormalizedFamilyPlans`
-- `PrimitiveTypes`
-- `Bindings`
-- `Resources`
-- `Composition`
+- `Deployments`;
+- `Families`;
+- `FamilyPlans`;
+- `PrimitiveTypes`;
+- `Resources`;
+- `Composition`.
+
+Topology rejects duplicate deployed Primitive Types and universal TypeIdentifier collisions.
+
+## Not part of this API
+
+There is no `TransportSet`, `Inbound`, `Outbound`, `Bidirectional`, `TransportBinding`, `DeploymentDirection`, runtime binding registry, or mutable topology API.

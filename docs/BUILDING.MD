@@ -4,11 +4,11 @@ EDP-Primitives requires C++20.
 
 ## Dependencies
 
-Stage 1 requires EDP-System only.
+EDP-Primitives requires EDP-System only.
 
-The validated Primitive-introduction implementation is now integrated to `main` in both EDP-System and EDP-Primitives.
+No Transport, Serialisation or Primitive-family repository is required to build the foundation.
 
-No version number was changed by this workstream.
+No version number is changed by the Transport-decoupling refactor; the repository remains on its unreleased development baseline.
 
 ## Host tests
 
@@ -33,20 +33,22 @@ For a non-sibling System checkout:
 EDP_SYSTEM_ROOT=/path/to/EDP-System python3 tests/run_tests.py
 ```
 
-The suite compiles and runs the positive Stage 1 contracts and verifies that invalid topology forms fail compilation.
+The suite compiles and runs positive C++20 contracts with `-Wall -Wextra -Werror -pedantic` and verifies that invalid topology forms fail compilation.
+
+Positive coverage includes empty topology, family grouping, complete declaration delivery, Primitive identity, resource aggregation, generated Primitive Composition, System Architecture compatibility, and shared runtime Provider de-duplication.
+
+Compile-fail coverage includes duplicate Primitive Types, duplicate universal TypeIdentifier values, invalid family runtime providers, duplicate resource dimensions, invalid family identities, and missing family Planners.
 
 ## Demo matrix
 
 `demos/topology-basic` supplies:
 
 - Arduino IDE;
-- PIOArduino Arduino;
-- PIOArduino ESP-IDF.
+- PIOArduino / PlatformIO Arduino;
+- PIOArduino / PlatformIO ESP-IDF.
 
-The PlatformIO configurations use the maintained PIOArduino platform baseline and consume EDP-System from `main`.
+The demo exercises only Primitive family planning, bounded resources and Composition. It intentionally contains no Transport mock or binding vocabulary.
 
-## Local validation limitation for this implementation session
+## Validation status
 
-The implementation agent's execution container cannot access the private/sibling Git repositories directly, so the complete repository test suite cannot be honestly reported as locally executed there.
-
-The authoritative integration gate is therefore the normal local sibling-checkout test run. Any failures found there must be fixed before reintegration.
+Repository test/build commands must be executed against the branch tip before completion is claimed. Historical validation results do not substitute for current-tip execution.

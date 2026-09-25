@@ -8,7 +8,6 @@ EDP-Primitives requires C++20.
 src/
 ├── ESPressio_Primitives.hpp
 └── primitives/
-    ├── Deployment.hpp
     ├── FamilyPlan.hpp
     ├── PrimitiveComposition.hpp
     ├── PrimitiveFamilyIdentifier.hpp
@@ -18,6 +17,8 @@ src/
     ├── Topology.hpp
     └── TypeList.hpp
 ```
+
+There is intentionally no Transport/deployment-binding header in the Primitive foundation.
 
 ## Host validation
 
@@ -33,32 +34,32 @@ or:
 EDP_SYSTEM_ROOT=/path/to/EDP-System python3 tests/run_tests.py
 ```
 
+The harness builds with C++20, `-Wall`, `-Wextra`, `-Werror`, and `-pedantic`.
+
 ## Positive coverage
 
-The main host test verifies:
+The host tests verify:
 
-- exact family identifier width and components;
+- exact family identifier representation;
 - Primitive family/type concepts and readers;
-- family declaration grouping;
-- AllTransports and Bidirectional expansion;
-- independent outbound exposure;
+- complete family declaration grouping;
+- one Planner invocation per represented family;
+- empty topology;
 - resource-plan retention;
 - generated Primitive Composition;
 - direct System Architecture compatibility;
-- two independently planned families sharing one runtime Provider Type, with provider de-duplication in the generated Composition.
+- independently planned families sharing one runtime Provider Type with provider de-duplication.
 
 ## Compile-fail coverage
 
-Expected failures currently guard:
+Expected failures guard:
 
-- duplicate configured transport Types;
-- duplicate normalized bindings;
-- family Planner binding rejection;
-- binding a Primitive omitted from the family plan;
+- duplicate Primitive Types in one family plan;
+- universal TypeIdentifier collisions between distinct deployed Primitive Types;
+- runtime Providers missing the exact FamilyRuntime capability;
 - duplicate semantic resource-dimension tags;
-- explicit bindings referencing an unconfigured transport;
-- Primitive-family identities with an invalid zero Type Authority;
-- Primitive-family declarations missing their canonical Planner association.
+- invalid Primitive-family identity;
+- family declarations missing their canonical Planner.
 
 ## Demo matrix
 
@@ -67,3 +68,5 @@ Expected failures currently guard:
 - Arduino IDE;
 - PIOArduino Arduino;
 - PIOArduino ESP-IDF.
+
+The demo is Transport-independent.

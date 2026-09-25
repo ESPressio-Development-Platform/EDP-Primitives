@@ -1,10 +1,10 @@
-# EDP-Primitives Stage 1 Architecture
+# EDP-Primitives Architecture
 
 ## Purpose
 
-EDP-Primitives is the common layer beneath concrete Primitive families such as future Command, Event, and State repositories.
+EDP-Primitives is the common layer beneath concrete Primitive families such as Command, Event and State.
 
-Its job is to provide stable family-neutral compile-time contracts. It must not absorb family behaviour or create a parallel runtime architecture framework.
+Its job is to provide stable family-neutral compile-time contracts. It must not absorb family behaviour, Transport policy, integration binding semantics, or create a parallel runtime architecture framework.
 
 ## Dependency direction
 
@@ -15,10 +15,10 @@ EDP-System
 EDP-Primitives
     ^
     |
-future Primitive-family repositories
+Primitive-family repositories
 ```
 
-There is no reverse dependency from EDP-Primitives to any family repository.
+There is no reverse dependency from EDP-Primitives to a family, Transport, Serialisation or platform repository.
 
 ## Identity layers
 
@@ -34,9 +34,9 @@ PrimitiveFamilyIdentifier
 +-----------------------+---------+
 ```
 
-Authority zero and local family zero are invalid.
+A semantic Primitive directly declares its universal `System::TypeIdentifier` and nested `Family` Type.
 
-A semantic Primitive directly declares its universal `System::TypeIdentifier` and its nested `Family` Type. Neither value is stored per runtime instance.
+Topology rejects both repeated Primitive C++ Types and distinct Primitive Types that collide on universal TypeIdentifier.
 
 ## Family-owned deployment declarations
 
@@ -48,7 +48,7 @@ The only common requirement is:
 using Family = /* Primitive family tag */;
 ```
 
-EDP-Primitives groups all declarations by Family before invoking the family's canonical Planner. The common layer does not interpret family-specific capacities or policy syntax.
+EDP-Primitives groups all declarations by Family while preserving declaration order. It does not interpret family-specific capacities, local execution policies, or other family-owned syntax.
 
 ## Planner contract
 
@@ -61,54 +61,30 @@ using Planner = FamilyPlanner;
 The Planner receives:
 
 1. the family Type;
-2. every family-owned deployment declaration for that family;
-3. the application's static `TransportSet`.
+2. every family-owned deployment declaration for that family.
 
 It emits one `FamilyPlan` containing:
 
 - the represented Family;
 - exactly one canonical runtime Provider Type;
 - unique deployed Primitive Types;
-- common deployment binding declarations;
 - a decomposed bounded `ResourcePlan`.
 
-The public `FamilyPlannerFor` concept describes this extension boundary.
+There is no common post-Planner transport normalization stage. Validated FamilyPlan output is already canonical.
 
-## Binding normalization
+## Transport and integration boundary
 
-Common declaration vocabulary consists of:
+Transport configuration and inbound/outbound bindings are deliberately outside EDP-Primitives.
 
-- `Inbound<Primitive, Transport>`;
-- `Outbound<Primitive, Transport>`;
-- `Bidirectional<Primitive, Transport>`;
-- `AllTransports`.
+Integration domains may define compile-time binding declarations and concrete adapter providers, but those relationships normalize into ordinary System Composition providers/contracts before application initialization.
 
-Normalization:
-
-1. expands `AllTransports` over the exact static `TransportSet`;
-2. expands `Bidirectional` into separate inbound and outbound bindings;
-3. rejects unconfigured concrete transports;
-4. rejects duplicate explicit bindings;
-5. ensures every binding targets a Primitive deployed by that family plan;
-6. invokes `Family::Planner::BindingEligible<Primitive, Transport, Direction>` for each explicit binding.
-
-No binding is synthesized when none is declared. Local-only is therefore the default.
-
-## Serialisability boundary
-
-Serialisability is an intrinsic compile-time Type capability but does not belong to Stage 1 EDP-Primitives.
-
-The common layer does not depend on EDP-Serialisation and does not equate serialisable with transmissible.
-
-A family Planner can consume whichever future Serialisation contract is appropriate and reject an ineligible requested binding through `BindingEligible`.
-
-A serialisable Primitive with no deployment binding remains local and incurs no transport runtime requirement from EDP-Primitives.
+Primitive families expose only the narrow integration capabilities required by their own semantics. EDP-Primitives does not provide a universal Primitive-to-Transport binding abstraction.
 
 ## Resource planning
 
-The common library does not impose `MaximumInstances<T>`.
+The common library does not impose one universal maximum-instance or byte-total model.
 
-A family Planner emits one or more semantic resource dimensions:
+A family Planner emits semantic resource dimensions such as:
 
 ```cpp
 ResourcePlan<
@@ -117,65 +93,33 @@ ResourcePlan<
 >
 ```
 
-The resource tag itself carries the semantic distinction. If alignment, placement, ownership, or lifetime differ, the family must represent those as distinct dimensions rather than collapsing them into a misleading total.
-
-Topology retains one independent resource plan per family in `ResourcePlanSet`.
+If alignment, placement, ownership or lifetime differ, the family represents them as distinct dimensions.
 
 ## Composition integration
 
-EDP-Primitives defines one focused Composition Domain:
+EDP-Primitives defines:
 
 ```cpp
 Primitives::Composition::Domain
-```
-
-and one family-parameterized exclusive capability:
-
-```cpp
 Primitives::Composition::FamilyRuntime<TFamily>
 ```
 
-Every normalized family plan supplies exactly one Provider offering its corresponding capability.
+Each family plan supplies exactly one Provider offering its corresponding capability.
 
-A single Provider Type may intentionally satisfy more than one family's runtime capability. Topology de-duplicates identical Provider Types before constructing the Composition, while each FamilyPlan still has to prove that the Provider offers that family's exact `FamilyRuntime<TFamily>`.
+One Provider Type may intentionally satisfy more than one family's runtime capability. Topology de-duplicates identical Provider Types only after every family plan has independently validated the exact capability it requires.
 
-Topology constructs:
+The generated Primitive Composition is inserted directly into the complete EDP-System Architecture.
 
-```cpp
-using Composition = System::CompositionFramework::Composition<
-    Primitives::Composition::Domain,
-    FamilyProviderA,
-    FamilyProviderB
->;
-```
+## Runtime ownership and immutability
 
-That Composition is used directly inside normal EDP-System `Architecture<...>`.
+Topology itself is metadata and owns no provider instances.
 
-Topology itself is metadata. It is not another Composition framework and owns no provider instances.
+Application Bootstrap owns concrete provider objects, resolves validated non-owning relationships, and initializes the complete Architecture according to Architecture lifecycle order.
 
-## Runtime ownership
+Successful completion of application initialization is the operational freeze boundary. From then on, the resolved topology is immutable for that runtime instance. Domain state may evolve; provider population, deployments, cross-domain bindings and capacities do not.
 
-Application Bootstrap owns concrete provider objects.
+A different topology requires a newly constructed and initialized runtime instance.
 
-EDP-Primitives does not provide:
+## No runtime registration
 
-- service location;
-- runtime discovery;
-- runtime provider matching;
-- static-registration objects;
-- hidden singleton ownership;
-- dynamic allocation;
-- runtime topology mutation.
-
-## Determinism
-
-Every operation is based on compile-time Type order:
-
-- family order is first declaration order;
-- declarations remain in application order within each family;
-- transport expansion follows `TransportSet` declaration order;
-- normalized binding order is deterministic;
-- resource plans preserve Planner declaration order;
-- family runtime providers appear in normalized family order.
-
-There is no unordered runtime data structure.
+EDP-Primitives provides no service location, runtime discovery, registration objects, hidden singleton ownership, dynamic allocation, or runtime topology mutation.

@@ -2,33 +2,30 @@
 
 Internal machinery lives primarily in `ESPressio::Primitives::Detail`.
 
-It is documented for maintainability but is not a supported extension surface.
+It is documented for maintainability but is not a supported family extension surface.
 
 ## Type-list machinery
 
-`TypeList.hpp` provides deterministic compile-time concatenation, uniqueness and duplicate detection used by topology normalization.
-
-## Deployment normalization
-
-`Deployment.hpp` contains traits that identify common deployment declarations and expand:
-
-- `AllTransports` over the configured transport set;
-- `Bidirectional` into explicit inbound/outbound halves.
+`TypeList.hpp` provides deterministic compile-time concatenation, uniqueness and duplicate detection.
 
 ## Family-plan validation
 
-`FamilyPlan.hpp` checks canonical Planner output shape, family membership, Primitive uniqueness, runtime Provider capability and ResourcePlan shape.
+`FamilyPlan.hpp` checks canonical Planner output shape, exact Family match, Primitive family membership, Primitive-Type uniqueness, ResourcePlan shape, and runtime Provider capability.
 
-## Topology normalization
+## Topology aggregation
 
-`Topology.hpp` contains the compile-time pipeline that:
+`Topology.hpp` performs the compile-time pipeline:
 
-1. extracts unique families;
-2. groups declarations per family;
-3. invokes one Planner per family;
-4. expands and validates bindings;
-5. flattens Primitive/binding views;
-6. retains independent family resource plans;
-7. builds the Primitive EDP-System Composition.
+1. extract unique families in first-declaration order;
+2. group complete declarations per family;
+3. invoke one canonical Planner per family;
+4. validate each FamilyPlan;
+5. flatten Primitive Types;
+6. reject duplicate C++ Primitive Types;
+7. reject universal TypeIdentifier collisions;
+8. retain independent family resource plans;
+9. build the Primitive EDP-System Composition while de-duplicating identical Provider Types.
 
-None of these helpers are external specialization points.
+There is no Transport expansion or integration normalization in this library.
+
+None of these Detail helpers are external specialization points.

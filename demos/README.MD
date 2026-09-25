@@ -7,13 +7,12 @@ Demonstrates:
 - one explicit Primitive family identity;
 - two universally identified Primitive Types;
 - a family-owned deployment declaration;
-- the canonical family Planner extension;
-- two statically configured transports;
-- `Bidirectional<..., AllTransports>` expansion;
-- an independent outbound binding;
+- the canonical Transport-independent family Planner extension;
 - a bounded family resource dimension;
 - one canonical family runtime Provider;
 - direct insertion of `Topology::Composition` into EDP-System `Architecture`.
+
+The demonstration intentionally contains no Transport Type or Transport-binding vocabulary.
 
 The demonstration is provided in all policy-required target forms:
 

@@ -1,17 +1,23 @@
 # Dependency Contracts
 
-## Mandatory dependency
+## Mandatory dependency: EDP-System
 
-EDP-Primitives depends on **EDP-System only**.
+EDP-Primitives depends on EDP-System only.
 
-System supplies universal Type identity and the Composition Framework used by Primitive runtime-provider integration.
+EDP-System supplies:
 
-## Explicit Stage 1 non-dependencies
+- universal Type identity and the canonical `TypeIdentifierOf<T>` reader;
+- Composition Domain/Capability/Provider/Contract vocabulary;
+- Composition and Architecture validation used by Primitive family runtime providers.
+
+Application Bootstrap, not EDP-Primitives, owns concrete Provider instances.
+
+## Explicit non-dependencies
 
 There is no production dependency on:
 
+- Transport/radio libraries;
 - Serialisation;
-- transport libraries;
 - Command;
 - Event;
 - State;
@@ -22,10 +28,16 @@ There is no production dependency on:
 
 ## Family boundary
 
-Future Primitive-family repositories depend on EDP-Primitives.
+Primitive-family repositories depend on EDP-Primitives and own their family-specific deployment declarations and Planner interpretation.
 
-A family Planner may consume additional family-relevant dependencies, such as a future Serialisation contract, to decide `BindingEligible`. That dependency remains above EDP-Primitives and must not be reversed into this repository.
+A family may consume additional dependencies for its own behaviour or integration contracts. Those dependencies remain above EDP-Primitives and must not be reversed into this repository.
 
-## Workstream pin
+## Integration boundary
 
-The Primitive-introduction workstream validated against the matching EDP-System feature implementation before reintegration. With that implementation now on `EDP-System/main`, permanent PlatformIO/library metadata consumes EDP-System from `main`.
+Cross-domain binding is represented through the owning integration repository's providers/contracts in the complete System Architecture.
+
+EDP-Primitives neither consumes nor validates concrete Transport configuration.
+
+## Immutability
+
+The compile-time Primitive topology contains no runtime mutation surface. Successful complete-Architecture initialization establishes the immutable operational topology for that runtime instance.
