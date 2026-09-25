@@ -101,7 +101,7 @@ The [`demos/topology-basic`](./demos/topology-basic) demonstration is supplied i
 
 Host and compile-fail tests are under [`tests/`](./tests).
 
-With sibling `EDP-System` and `EDP-Primitives` checkouts on their matching `feature/primitives_introduction` branches:
+With sibling `EDP-System` and `EDP-Primitives` checkouts on `main`:
 
 ```bash
 cd EDP-Primitives
