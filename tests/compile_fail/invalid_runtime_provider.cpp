@@ -44,9 +44,20 @@ namespace Test {
     };
 
 
+    /// Unrelated capability proving that the provider is structurally valid but not a family runtime provider.
+    struct OtherCapability final : Framework::ExclusiveCapability<
+        Primitives::Composition::Domain
+    > {};
+
+
+    /// Structurally valid Primitive-domain provider which intentionally omits FamilyRuntime<Family>.
     class InvalidProvider final : public Framework::Provider<
         Primitives::Composition::Domain,
-        Framework::Offers<>
+        Framework::Offers<
+            Framework::Offer<
+                OtherCapability
+            >
+        >
     > {};
 
 
