@@ -6,13 +6,9 @@ EDP-Primitives requires C++20.
 
 Stage 1 requires EDP-System only.
 
-During the coordinated Primitive-introduction workstream both repositories must use:
+The validated Primitive-introduction implementation is now integrated to `main` in both EDP-System and EDP-Primitives.
 
-```text
-feature/primitives_introduction
-```
-
-No version number is changed by this workstream.
+No version number was changed by this workstream.
 
 ## Host tests
 
@@ -47,7 +43,7 @@ The suite compiles and runs the positive Stage 1 contracts and verifies that inv
 - PIOArduino Arduino;
 - PIOArduino ESP-IDF.
 
-The PlatformIO configurations use the maintained PIOArduino platform baseline and explicitly consume the matching EDP-System feature branch.
+The PlatformIO configurations use the maintained PIOArduino platform baseline and consume EDP-System from `main`.
 
 ## Local validation limitation for this implementation session
 
