@@ -32,6 +32,10 @@ Topology groups all family-owned deployment declarations by Family. The Planner 
 
 The FamilyPlan contains runtime Provider, deployed Primitive Types and ResourcePlan only.
 
+## Execution-domain scope
+
+`Primitives::ExecutionDomain` owns the canonical `LocalOnly`, `RemoteOnly`, and `LocalAndRemote` compile-time policy Types and the `Scope<TScope>` concept. Primitive families may re-export the canonical Types for namespace consistency, but family-specific dispatch, expiry, retention and result semantics remain family-owned.
+
 ## Integration boundary
 
 Transport directionality and bindings are not Primitive topology.

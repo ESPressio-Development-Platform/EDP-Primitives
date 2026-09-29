@@ -27,6 +27,17 @@ Requires a valid universal `System::IdentifiedType<T>`, nested `Family`, and val
 - `PrimitiveFamilyOf<T>`;
 - `PrimitiveFamilyIdentifierOf<T>`.
 
+## Execution-domain scope
+
+The canonical family-neutral scope vocabulary is defined under `Primitives::ExecutionDomain`:
+
+- `LocalOnly`;
+- `RemoteOnly`;
+- `LocalAndRemote`;
+- `Scope<TScope>`.
+
+These Types are compile-time policy tags only. Family-specific dispatch/orchestration and result semantics remain outside EDP-Primitives. See [Execution-Domain Scope](./EXECUTION-DOMAIN-SCOPE.MD).
+
 ## Resource planning
 
 ### `ResourceRequirement<Tag, Capacity>`

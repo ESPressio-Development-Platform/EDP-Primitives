@@ -7,6 +7,15 @@
 - `PrimitiveType<T>` — universally identified semantic Primitive predicate.
 - `PrimitiveFamilyOf<T>` / `PrimitiveFamilyIdentifierOf<T>` — canonical family readers.
 
+## Execution-domain scope
+
+- `Primitives::ExecutionDomain::LocalOnly` — selects local-domain operation only.
+- `Primitives::ExecutionDomain::RemoteOnly` — selects external remote-domain operation only.
+- `Primitives::ExecutionDomain::LocalAndRemote` — selects independent operation in both domains.
+- `Primitives::ExecutionDomain::Scope<TScope>` — concept accepting exactly the canonical scope Types, including cv/ref-qualified forms.
+
+These Types carry no runtime state. Family-specific orchestration is deliberately outside this API.
+
 ## Resource planning
 
 - `ResourceRequirement<Tag, Capacity>`;

@@ -10,6 +10,7 @@ It deliberately owns only family-neutral Primitive concepts:
 - one canonical Planner contract per Primitive family;
 - canonical family plans;
 - decomposed bounded family resource plans;
+- canonical family-neutral execution-domain scope tags for local, remote, and independent local+remote operation;
 - the Primitive runtime Composition consumed by normal `EDP-System` Architecture.
 
 It does **not** own Transport configuration, Transport bindings, Command, Event, State, Serialisation, runtime discovery, provider lifetime, service location, or dynamic allocation.
@@ -19,6 +20,13 @@ It does **not** own Transport configuration, Transport bindings, Command, Event,
 ```cpp
 #include <ESPressio_Primitives.hpp>
 ```
+
+## Documentation
+
+- [Architecture](./docs/ARCHITECTURE.MD)
+- [Public API](./docs/PUBLIC-API.MD)
+- [Execution-Domain Scope](./docs/EXECUTION-DOMAIN-SCOPE.MD)
+- [Building and Validation](./docs/BUILDING.MD)
 
 ## Semantic Primitive declaration
 
@@ -106,6 +114,8 @@ EDP-Primitives
 ```
 
 There is no production dependency on Transport, Serialisation, Threading, Command, Event, State, Memory, Arduino, ESP-IDF, or another platform SDK.
+
+See [DEPENDENCY_GRAPH.MD](./DEPENDENCY_GRAPH.MD) for the revalidated dependency contract.
 
 ## Validation
 

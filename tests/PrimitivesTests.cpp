@@ -4,6 +4,18 @@
 
 #include "TestSupport.hpp"
 
+
+static_assert(ESPressio::Primitives::ExecutionDomain::Scope<
+    ESPressio::Primitives::ExecutionDomain::LocalOnly
+>);
+static_assert(ESPressio::Primitives::ExecutionDomain::Scope<
+    const ESPressio::Primitives::ExecutionDomain::RemoteOnly&
+>);
+static_assert(ESPressio::Primitives::ExecutionDomain::Scope<
+    volatile ESPressio::Primitives::ExecutionDomain::LocalAndRemote
+>);
+static_assert(!ESPressio::Primitives::ExecutionDomain::Scope<int>);
+
 namespace ESPressio::Primitives::Tests {
 
     namespace Framework = ESPressio::System::CompositionFramework;

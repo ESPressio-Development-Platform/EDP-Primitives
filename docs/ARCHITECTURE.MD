@@ -72,6 +72,12 @@ It emits one `FamilyPlan` containing:
 
 There is no common post-Planner transport normalization stage. Validated FamilyPlan output is already canonical.
 
+## Execution-domain scope ownership
+
+EDP-Primitives owns the canonical compile-time `ExecutionDomain::LocalOnly`, `RemoteOnly`, and `LocalAndRemote` policy tags plus the `ExecutionDomain::Scope` concept. This common vocabulary is family-neutral and may be re-exported by Primitive-family repositories.
+
+The common layer does not implement dispatch coordination or transport behaviour. Each family retains the semantics required to act upon the selected domain scope.
+
 ## Transport and integration boundary
 
 Transport configuration and inbound/outbound bindings are deliberately outside EDP-Primitives.

@@ -1,0 +1,25 @@
+name: validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  host-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout EDP-Primitives
+        uses: actions/checkout@v4
+        with:
+          path: EDP-Primitives
+
+      - name: Checkout EDP-System
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-System
+          ref: main
+          path: EDP-System
+
+      - name: Run C++20 host contracts
+        working-directory: EDP-Primitives
+        run: python3 tests/run_tests.py

@@ -1,6 +1,6 @@
 # EDP-Primitives Dependency Graph
 
-> Baseline: 2026-09-25 — Transport-independent Primitive family foundation.
+> Revalidated: 2026-09-29 — canonical execution-domain scope vocabulary adds no dependency edge.
 
 ## Library Dependency Tree
 

@@ -35,7 +35,7 @@ EDP_SYSTEM_ROOT=/path/to/EDP-System python3 tests/run_tests.py
 
 The suite compiles and runs positive C++20 contracts with `-Wall -Wextra -Werror -pedantic` and verifies that invalid topology forms fail compilation.
 
-Positive coverage includes empty topology, family grouping, complete declaration delivery, Primitive identity, resource aggregation, generated Primitive Composition, System Architecture compatibility, and shared runtime Provider de-duplication.
+Positive coverage includes canonical execution-domain scope qualification, empty topology, family grouping, complete declaration delivery, Primitive identity, resource aggregation, generated Primitive Composition, System Architecture compatibility, and shared runtime Provider de-duplication.
 
 Compile-fail coverage includes duplicate Primitive Types, duplicate universal TypeIdentifier values, invalid family runtime providers, duplicate resource dimensions, invalid family identities, and missing family Planners.
 

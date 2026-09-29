@@ -2,7 +2,7 @@
 
 EDP-Primitives is the family-neutral compile-time foundation beneath EDP Primitive families.
 
-It owns Primitive family identity, semantic Primitive classification, opaque family-owned deployment declarations, canonical family Planner contracts, decomposed bounded resource plans, topology aggregation, universal Primitive identity collision validation, and the focused Primitive Composition Domain.
+It owns Primitive family identity, semantic Primitive classification, canonical family-neutral execution-domain scope tags, opaque family-owned deployment declarations, canonical family Planner contracts, decomposed bounded resource plans, topology aggregation, universal Primitive identity collision validation, and the focused Primitive Composition Domain.
 
 It deliberately does **not** own Command/Event/State behaviour, Transport configuration or bindings, Serialisation, runtime discovery, provider lifetime, dynamic allocation, or mutable topology.
 

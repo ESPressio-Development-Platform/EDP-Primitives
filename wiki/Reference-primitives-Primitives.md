@@ -2,12 +2,9 @@
 
 **Primary classification:** PUBLIC API aggregation header
 
-**Source baseline:** `b2dc70330de942be39e526a8646b7cd2d5e07cad`
-
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/b2dc70330de942be39e526a8646b7cd2d5e07cad/src/primitives/Primitives.hpp)
-
 ## Direct includes
 
+- `ExecutionDomain.hpp`;
 - `FamilyPlan.hpp`;
 - `PrimitiveComposition.hpp`;
 - `PrimitiveFamilyIdentifier.hpp`;

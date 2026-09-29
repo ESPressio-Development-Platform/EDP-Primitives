@@ -8,6 +8,7 @@ EDP-Primitives requires C++20.
 src/
 ├── ESPressio_Primitives.hpp
 └── primitives/
+    ├── ExecutionDomain.hpp
     ├── FamilyPlan.hpp
     ├── PrimitiveComposition.hpp
     ├── PrimitiveFamilyIdentifier.hpp
@@ -40,6 +41,7 @@ The harness builds with C++20, `-Wall`, `-Wextra`, `-Werror`, and `-pedantic`.
 
 The host tests verify:
 
+- canonical execution-domain scope qualification and cv/ref handling;
 - exact family identifier representation;
 - Primitive family/type concepts and readers;
 - complete family declaration grouping;
