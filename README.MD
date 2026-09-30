@@ -5,7 +5,7 @@
 It deliberately owns only family-neutral Primitive concepts:
 
 - stable Primitive-family identity;
-- classification of universally identified semantic Types into Primitive families;
+- classification of universal schema-bearing semantic Types into Primitive families;
 - opaque family-owned deployment declarations;
 - one canonical Planner contract per Primitive family;
 - canonical family plans;
@@ -30,14 +30,29 @@ It does **not** own Transport configuration, Transport bindings, Command, Event,
 
 ## Semantic Primitive declaration
 
+Every Primitive is structurally a `System::SchemaType`.
+
 ```cpp
 struct ExamplePrimitive final {
     static constexpr ESPressio::System::TypeIdentifier Identifier = /* explicit */;
+
+    using Fields = ESPressio::System::FieldSet<
+        /* explicit stable FieldBinding declarations */
+    >;
+
     using Family = ExampleFamily;
 };
 ```
 
-A Primitive Type carries universal `EDP-System` identity and names exactly one Primitive family. No base class, RTTI, runtime registration object or per-instance identity storage is required.
+A zero-data Primitive still declares its schema explicitly:
+
+```cpp
+using Fields = ESPressio::System::FieldSet<>;
+```
+
+The schema contract gives each Primitive universal Type identity plus an authoritative compile-time Field set. Numeric `System::FieldIdentifier` values, not member declaration order, are semantic Field identity. No base class, RTTI, runtime registration object or per-instance identity storage is required.
+
+`EDP-Primitives` does not yet impose Serialisation mechanics in the current prerequisite tranche; `SerialisableType` becomes a universal Primitive invariant only after `EDP-Serialisation` exists.
 
 ## Family Planner boundary
 
@@ -126,10 +141,10 @@ cd EDP-Primitives
 python3 tests/run_tests.py
 ```
 
-The host suite uses C++20 with warnings-as-errors, executes positive contract tests, and confirms expected compile failures.
+The host suite uses C++20 with warnings-as-errors, executes positive contract tests, and confirms expected compile failures, including rejection of an identified/family-bearing Primitive that lacks `System::SchemaType` metadata.
 
 The `demos/topology-basic` example is supplied for Arduino IDE, PlatformIO Arduino, and PlatformIO ESP-IDF.
 
 ## Version state
 
-The repository remains on its unreleased `0.1.0` development baseline. This Transport-decoupling architectural correction does not mutate the version.
+The repository remains at `0.1.0`. This prerequisite schema-contract correction does not mutate the version.
