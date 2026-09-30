@@ -34,6 +34,7 @@ COMPILE_FAIL_TESTS = (
     ROOT / "tests" / "compile_fail" / "duplicate_resource.cpp",
     ROOT / "tests" / "compile_fail" / "invalid_family_identifier.cpp",
     ROOT / "tests" / "compile_fail" / "missing_family_planner.cpp",
+    ROOT / "tests" / "compile_fail" / "missing_schema.cpp",
 )
 
 COMMON_ARGUMENTS = (
