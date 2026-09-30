@@ -2,9 +2,9 @@
 
 **Primary classification:** PUBLIC API with PRIVATE IMPLEMENTATION validation helpers
 
-**Source baseline:** `f72501ec19ceb95295c4586ba74488acfa9ad9c9`
+**Source baseline:** `851fde8d9d9d70dc7023b7fd99736c019696c8de`
 
-[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/f72501ec19ceb95295c4586ba74488acfa9ad9c9/src/primitives/PrimitiveType.hpp)
+[Open exact source](https://github.com/ESPressio-Development-Platform/EDP-Primitives/blob/851fde8d9d9d70dc7023b7fd99736c019696c8de/src/primitives/PrimitiveType.hpp)
 
 ## Public API
 
@@ -21,13 +21,17 @@ Validates that a family Type declares:
 
 Requires:
 
-- `System::IdentifiedType<TType>`;
+- `System::SchemaType<TType>`;
 - nested `Family`;
 - valid `PrimitiveFamilyType<Family>`.
 
+Every Primitive is therefore structurally schema-bearing. A zero-data Primitive declares `using Fields = System::FieldSet<>;`; payload-bearing Primitives declare explicit stable `System::FieldBinding`s. Numeric FieldIdentifier is authoritative semantic Field identity.
+
+The Stage-A prerequisite contract intentionally does not yet require `Serialisation::SerialisableType`; that becomes universal only after `EDP-Serialisation` exists.
+
 ### `PrimitiveFamilyOf<TType>`
 
-Canonical compile-time Type reader for a semantic Primitive's nested Family.
+Canonical compile-time Type reader for a semantic Primitive's nested Family. Its focused diagnostic path also requires `System::SchemaType<TType>`.
 
 ### `PrimitiveFamilyIdentifierOf<TType>`
 
@@ -65,6 +69,6 @@ Detects a semantic Primitive's nested Family.
 
 ### `ReadPrimitiveFamily<TType>`
 
-Validates universal Type identity plus family classification and returns the direct Family Type.
+Validates universal schema qualification plus family classification and returns the direct Family Type.
 
 None of the Detail declarations are external specialization points.
