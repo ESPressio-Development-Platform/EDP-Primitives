@@ -1,11 +1,15 @@
 # Public API
 
-## Identity and classification
+## Identity, schema and classification
 
 - `PrimitiveFamilyIdentifier` — exact four-byte family identity.
 - `PrimitiveFamilyType<T>` — valid Primitive-family predicate.
-- `PrimitiveType<T>` — universally identified semantic Primitive predicate.
+- `PrimitiveType<T>` — schema-bearing semantic Primitive predicate.
 - `PrimitiveFamilyOf<T>` / `PrimitiveFamilyIdentifierOf<T>` — canonical family readers.
+
+`PrimitiveType<T>` requires `System::SchemaType<T>`, a nested `Family`, and a valid Primitive family. Every Primitive therefore owns explicit universal Type identity and a canonical compile-time Field schema. Zero-data Primitives use `System::FieldSet<>`; payload-bearing Primitives use stable `System::FieldBinding`s.
+
+The current prerequisite branch does not yet impose `Serialisation::SerialisableType`; that later universal constraint is introduced only after `EDP-Serialisation` exists.
 
 ## Execution-domain scope
 
