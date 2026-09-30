@@ -123,8 +123,8 @@ namespace ESPressio::Primitives {
         struct ReadPrimitiveFamily final {
 
             static_assert(
-                System::IdentifiedType<TType>,
-                "Primitive Types must satisfy System::IdentifiedType"
+                System::SchemaType<TType>,
+                "Primitive Types must satisfy System::SchemaType"
             );
 
             static_assert(
@@ -152,12 +152,16 @@ namespace ESPressio::Primitives {
     concept PrimitiveFamilyType = Detail::IsPrimitiveFamilyType<TFamily>();
 
 
-    /// Predicate identifying semantic Types carrying universal identity and Primitive-family classification.
+    /// Predicate identifying semantic schema Types carrying universal identity and Primitive-family classification.
+    ///
+    /// Every Primitive is structurally schema-bearing. A zero-data Primitive therefore declares an explicit
+    /// `System::FieldSet<>`; payload-bearing Primitives declare their stable `System::FieldBinding`s through the
+    /// canonical System schema contract.
     ///
     /// @tparam TType Semantic Primitive Type being validated.
     template<class TType>
     concept PrimitiveType =
-        System::IdentifiedType<TType> &&
+        System::SchemaType<TType> &&
         Detail::HasPrimitiveFamilyMember<TType> &&
         PrimitiveFamilyType<typename TType::Family>;
 
