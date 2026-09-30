@@ -42,7 +42,7 @@ namespace Demo {
     };
 
 
-    /// First semantic Primitive Type.
+    /// First zero-field semantic Primitive Type.
     struct StartSignal final {
 
         /// Stable universal Type identity.
@@ -59,13 +59,16 @@ namespace Demo {
             }
         };
 
+        /// Canonical zero-field schema.
+        using Fields = ESPressio::System::FieldSet<>;
+
         /// Primitive family classification.
         using Family = Demo::Family;
 
     };
 
 
-    /// Second semantic Primitive Type.
+    /// Second zero-field semantic Primitive Type.
     struct StopSignal final {
 
         /// Stable universal Type identity.
@@ -81,6 +84,9 @@ namespace Demo {
                 0x02U
             }
         };
+
+        /// Canonical zero-field schema.
+        using Fields = ESPressio::System::FieldSet<>;
 
         /// Primitive family classification.
         using Family = Demo::Family;
