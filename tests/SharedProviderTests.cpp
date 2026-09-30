@@ -54,6 +54,7 @@ namespace ESPressio::Primitives::Tests::SharedProvider {
             }
         };
 
+        using Fields = System::FieldSet<>;
         using Family = FamilyA;
 
     };
@@ -68,6 +69,7 @@ namespace ESPressio::Primitives::Tests::SharedProvider {
             }
         };
 
+        using Fields = System::FieldSet<>;
         using Family = FamilyB;
 
     };
