@@ -18,11 +18,20 @@ EDP-Primitives
 Primitive-family repositories
 ```
 
-There is no reverse dependency from EDP-Primitives to a family, Transport, Serialisation or platform repository.
+There is no reverse dependency from EDP-Primitives to a family, Transport, Serialisation or platform repository during the Stage-A prerequisite tranche.
 
-## Identity layers
+After EDP-Serialisation exists, EDP-Primitives will add the universal compile-time `SerialisableType` constraint in the already-locked dependency direction; that later tightening does not change the System-owned schema contract described here.
 
-Universal semantic Type identity is owned by EDP-System.
+## Identity and schema layers
+
+Universal semantic Type and Field identity are owned by EDP-System.
+
+Every semantic Primitive satisfies `System::SchemaType` and therefore directly declares:
+
+- its universal `System::TypeIdentifier`;
+- its canonical compile-time `Fields` set.
+
+A zero-data Primitive explicitly declares `System::FieldSet<>`. Payload-bearing Primitives use stable numeric `System::FieldIdentifier`s through `System::FieldBinding`s. Member declaration order is not semantic Field identity.
 
 Primitive family identity is owned here:
 
@@ -34,7 +43,7 @@ PrimitiveFamilyIdentifier
 +-----------------------+---------+
 ```
 
-A semantic Primitive directly declares its universal `System::TypeIdentifier` and nested `Family` Type.
+A semantic Primitive additionally declares its nested `Family` Type.
 
 Topology rejects both repeated Primitive C++ Types and distinct Primitive Types that collide on universal TypeIdentifier.
 
