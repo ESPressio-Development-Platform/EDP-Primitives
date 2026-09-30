@@ -33,7 +33,7 @@ namespace ESPressio::Primitives::Tests::Support {
     };
 
 
-    /// First identified Primitive Type in TestFamily.
+    /// First zero-field schema-bearing Primitive Type in TestFamily.
     struct PrimitiveA final {
 
         /// Stable universal Type identity.
@@ -50,13 +50,16 @@ namespace ESPressio::Primitives::Tests::Support {
             }
         };
 
+        /// Canonical zero-field schema.
+        using Fields = System::FieldSet<>;
+
         /// Primitive family classification.
         using Family = TestFamily;
 
     };
 
 
-    /// Second identified Primitive Type in TestFamily.
+    /// Second zero-field schema-bearing Primitive Type in TestFamily.
     struct PrimitiveB final {
 
         /// Stable universal Type identity.
@@ -72,6 +75,9 @@ namespace ESPressio::Primitives::Tests::Support {
                 0x02U
             }
         };
+
+        /// Canonical zero-field schema.
+        using Fields = System::FieldSet<>;
 
         /// Primitive family classification.
         using Family = TestFamily;
