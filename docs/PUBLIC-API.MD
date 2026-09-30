@@ -8,7 +8,7 @@
 
 Narrow headers under `src/primitives/` may also be included directly when only one contract is required.
 
-## Identity
+## Identity and schema
 
 ### `PrimitiveFamilyIdentifier`
 
@@ -20,7 +20,15 @@ Validates a family tag containing a constant valid `PrimitiveFamilyIdentifier` a
 
 ### `PrimitiveType<T>`
 
-Requires a valid universal `System::IdentifiedType<T>`, nested `Family`, and valid Primitive family.
+Requires:
+
+- a valid `System::SchemaType<T>`;
+- a nested `Family` Type;
+- a valid Primitive family.
+
+Therefore every Primitive has universal `System::TypeIdentifier` identity and an authoritative compile-time `Fields` schema. Zero-data Primitives declare `using Fields = System::FieldSet<>;`. Payload-bearing Primitives use explicit stable `System::FieldBinding`s.
+
+The current prerequisite contract does not yet require `Serialisation::SerialisableType`; that universal constraint is added only after `EDP-Serialisation` exists.
 
 ### Readers
 
