@@ -14,11 +14,15 @@ Command / Event / State / future Primitive families
 
 EDP-Primitives is compile-time family-neutral architecture metadata, not a runtime broker.
 
-## Universal Type identity
+## Universal Type identity and schema
 
-Semantic Type identity is owned by EDP-System. A Primitive Type therefore uses the same `System::TypeIdentifier` as every other identified EDP Type and adds only a nested `Family` classification.
+Semantic Type and Field identity are owned by EDP-System. Every Primitive satisfies `System::SchemaType` and therefore declares the same universal `System::TypeIdentifier` used by other EDP semantic Types plus an authoritative compile-time `Fields` schema.
 
-Topology enforces universal identity uniqueness across all deployed Primitive Types.
+A zero-data Primitive uses `System::FieldSet<>`. Payload-bearing Primitives use explicit `System::FieldBinding`s with stable numeric `System::FieldIdentifier`s. Member declaration order is not semantic Field identity.
+
+A Primitive additionally declares its nested `Family` classification.
+
+Topology enforces universal Type identity uniqueness across all deployed Primitive Types.
 
 ## Primitive family identity
 
@@ -43,6 +47,10 @@ Transport directionality and bindings are not Primitive topology.
 Transport/integration repositories own their compile-time binding declarations and adapter providers. Cross-domain validity is expressed through normal EDP-System Composition capabilities/contracts.
 
 A Primitive family defines only the family-specific integration capabilities required by its semantics; EDP-Primitives does not define a universal Primitive-to-Transport binding contract.
+
+## Serialisation boundary
+
+The Stage-A prerequisite contract is structural only: every Primitive is schema-bearing, but EDP-Primitives does not yet depend on EDP-Serialisation. Once EDP-Serialisation exists, the already-locked Stage-C change will add `Serialisation::SerialisableType` as a second universal Primitive invariant without duplicating schema ownership.
 
 ## Resources
 
