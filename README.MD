@@ -5,7 +5,7 @@
 It deliberately owns only family-neutral Primitive concepts:
 
 - stable Primitive-family identity;
-- classification of universal schema-bearing semantic Types into Primitive families;
+- classification of universal serialisable schema-bearing semantic Types into Primitive families;
 - opaque family-owned deployment declarations;
 - one canonical Planner contract per Primitive family;
 - canonical family plans;
@@ -13,7 +13,7 @@ It deliberately owns only family-neutral Primitive concepts:
 - canonical family-neutral execution-domain scope tags for local, remote, and independent local+remote operation;
 - the Primitive runtime Composition consumed by normal `EDP-System` Architecture.
 
-It does **not** own Transport configuration, Transport bindings, Command, Event, State, Serialisation, runtime discovery, provider lifetime, service location, or dynamic allocation.
+It does **not** own Transport configuration, Transport bindings, Command, Event, State, Serialisation codec mechanics, runtime discovery, provider lifetime, service location, or dynamic allocation. It consumes only the public `Serialisation::SerialisableType` qualification contract.
 
 ## Public entry point
 
@@ -30,7 +30,7 @@ It does **not** own Transport configuration, Transport bindings, Command, Event,
 
 ## Semantic Primitive declaration
 
-Every Primitive is structurally a `System::SchemaType`.
+Every Primitive is both a `System::SchemaType` and a `Serialisation::SerialisableType`.
 
 ```cpp
 struct ExamplePrimitive final {
@@ -52,7 +52,7 @@ using Fields = ESPressio::System::FieldSet<>;
 
 The schema contract gives each Primitive universal Type identity plus an authoritative compile-time Field set. Numeric `System::FieldIdentifier` values, not member declaration order, are semantic Field identity. No base class, RTTI, runtime registration object or per-instance identity storage is required.
 
-`EDP-Primitives` does not yet impose Serialisation mechanics in the current prerequisite tranche; `SerialisableType` becomes a universal Primitive invariant only after `EDP-Serialisation` exists.
+`PrimitiveType<T>` now requires `Serialisation::SerialisableType<T>` universally. This is compile-time qualification only: codec selection, encoded representation, buffers, parsing, and runtime Serialisation operations remain owned by `EDP-Serialisation`.
 
 ## Family Planner boundary
 
@@ -128,7 +128,7 @@ EDP-Primitives
 └── EDP-System [mandatory]
 ```
 
-There is no production dependency on Transport, Serialisation, Threading, Command, Event, State, Memory, Arduino, ESP-IDF, or another platform SDK.
+There is no production dependency on Transport, Threading, Command, Event, State, Memory, Arduino, ESP-IDF, or another platform SDK. `EDP-Serialisation` is a direct compile-time dependency solely for `SerialisableType`; its lower dependencies remain transitive.
 
 See [DEPENDENCY_GRAPH.MD](./DEPENDENCY_GRAPH.MD) for the revalidated dependency contract.
 
@@ -141,7 +141,7 @@ cd EDP-Primitives
 python3 tests/run_tests.py
 ```
 
-The host suite uses C++20 with warnings-as-errors, executes positive contract tests, and confirms expected compile failures, including rejection of an identified/family-bearing Primitive that lacks `System::SchemaType` metadata.
+The host suite uses C++20 with warnings-as-errors, executes positive contract tests, and confirms expected compile failures, including rejection of both missing schema metadata and schema-bearing Primitives whose Field Types are outside the V1 `SerialisableType` universe.
 
 The `demos/topology-basic` example is supplied for Arduino IDE, PlatformIO Arduino, and PlatformIO ESP-IDF.
 

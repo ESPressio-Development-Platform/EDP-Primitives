@@ -16,7 +16,7 @@ EDP-Primitives is compile-time family-neutral architecture metadata, not a runti
 
 ## Universal Type identity and schema
 
-Semantic Type and Field identity are owned by EDP-System. Every Primitive satisfies `System::SchemaType` and therefore declares the same universal `System::TypeIdentifier` used by other EDP semantic Types plus an authoritative compile-time `Fields` schema.
+Semantic Type and Field identity are owned by EDP-System. Every Primitive satisfies `System::SchemaType` and `Serialisation::SerialisableType`, therefore declaring the same universal `System::TypeIdentifier` plus an authoritative compile-time `Fields` schema whose values are recursively serialisable.
 
 A zero-data Primitive uses `System::FieldSet<>`. Payload-bearing Primitives use explicit `System::FieldBinding`s with stable numeric `System::FieldIdentifier`s. Member declaration order is not semantic Field identity.
 
@@ -50,7 +50,7 @@ A Primitive family defines only the family-specific integration capabilities req
 
 ## Serialisation boundary
 
-The Stage-A prerequisite contract is structural only: every Primitive is schema-bearing, but EDP-Primitives does not yet depend on EDP-Serialisation. Once EDP-Serialisation exists, the already-locked Stage-C change will add `Serialisation::SerialisableType` as a second universal Primitive invariant without duplicating schema ownership.
+Stage C adds `Serialisation::SerialisableType` as the second universal Primitive invariant. Schema ownership remains exclusively in EDP-System; Serialisation supplies qualification only and does not move codec mechanics into Primitives.
 
 ## Resources
 

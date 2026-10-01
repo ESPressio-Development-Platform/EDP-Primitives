@@ -2,6 +2,8 @@
 
 #include <type_traits>
 
+#include <serialisation/SerialisableType.hpp>
+
 #include "PrimitiveFamilyIdentifier.hpp"
 
 namespace ESPressio::Primitives {
@@ -152,16 +154,18 @@ namespace ESPressio::Primitives {
     concept PrimitiveFamilyType = Detail::IsPrimitiveFamilyType<TFamily>();
 
 
-    /// Predicate identifying semantic schema Types carrying universal identity and Primitive-family classification.
+    /// Predicate identifying serialisable semantic schema Types carrying universal identity and Primitive-family classification.
     ///
-    /// Every Primitive is structurally schema-bearing. A zero-data Primitive therefore declares an explicit
-    /// `System::FieldSet<>`; payload-bearing Primitives declare their stable `System::FieldBinding`s through the
-    /// canonical System schema contract.
+    /// Every Primitive is structurally schema-bearing and recursively satisfies the canonical
+    /// `Serialisation::SerialisableType` value universe. A zero-data Primitive therefore declares an explicit
+    /// `System::FieldSet<>`; payload-bearing Primitives declare stable serialisable `System::FieldBinding`s through
+    /// the canonical System schema contract.
     ///
     /// @tparam TType Semantic Primitive Type being validated.
     template<class TType>
     concept PrimitiveType =
         System::SchemaType<TType> &&
+        Serialisation::SerialisableType<TType> &&
         Detail::HasPrimitiveFamilyMember<TType> &&
         PrimitiveFamilyType<typename TType::Family>;
 

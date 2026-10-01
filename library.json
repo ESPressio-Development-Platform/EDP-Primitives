@@ -31,6 +31,11 @@
       "name": "EDP-System",
       "version": "https://github.com/ESPressio-Development-Platform/EDP-System.git#main",
       "platforms": "*"
+    },
+    {
+      "name": "EDP-Serialisation",
+      "version": "https://github.com/ESPressio-Development-Platform/EDP-Serialisation.git#main",
+      "platforms": "*"
     }
   ]
 }

@@ -9,29 +9,27 @@ Its job is to provide stable family-neutral compile-time contracts. It must not 
 ## Dependency direction
 
 ```text
-EDP-System
-    ^
-    |
-EDP-Primitives
+EDP-System        EDP-Serialisation
+    ^                  ^
+    |                  |
+    +------ EDP-Primitives
     ^
     |
 Primitive-family repositories
 ```
 
-There is no reverse dependency from EDP-Primitives to a family, Transport, Serialisation or platform repository during the Stage-A prerequisite tranche.
-
-After EDP-Serialisation exists, EDP-Primitives will add the universal compile-time `SerialisableType` constraint in the already-locked dependency direction; that later tightening does not change the System-owned schema contract described here.
+EDP-Primitives now depends directly on EDP-Serialisation for the public compile-time `SerialisableType` predicate. It does not consume codec operations, buffers, parser state, Localisation, Transport, or platform-specific behavior. The dependency remains acyclic because EDP-Serialisation does not depend on EDP-Primitives.
 
 ## Identity and schema layers
 
 Universal semantic Type and Field identity are owned by EDP-System.
 
-Every semantic Primitive satisfies `System::SchemaType` and therefore directly declares:
+Every semantic Primitive satisfies both `System::SchemaType` and `Serialisation::SerialisableType`. It therefore directly declares:
 
 - its universal `System::TypeIdentifier`;
 - its canonical compile-time `Fields` set.
 
-A zero-data Primitive explicitly declares `System::FieldSet<>`. Payload-bearing Primitives use stable numeric `System::FieldIdentifier`s through `System::FieldBinding`s. Member declaration order is not semantic Field identity.
+A zero-data Primitive explicitly declares `System::FieldSet<>`. Payload-bearing Primitives use stable numeric `System::FieldIdentifier`s through `System::FieldBinding`s. Member declaration order is not semantic Field identity. Every declared Field value must also be recursively admitted by the Serialisation V1 Type universe.
 
 Primitive family identity is owned here:
 

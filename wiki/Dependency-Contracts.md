@@ -1,8 +1,8 @@
 # Dependency Contracts
 
-## Mandatory dependency: EDP-System
+## Mandatory direct dependencies
 
-EDP-Primitives depends on EDP-System only.
+EDP-Primitives depends directly on EDP-System and EDP-Serialisation.
 
 EDP-System supplies:
 
@@ -12,12 +12,15 @@ EDP-System supplies:
 
 Application Bootstrap, not EDP-Primitives, owns concrete Provider instances.
 
+### EDP-Serialisation
+
+Primitives consumes the public `Serialisation::SerialisableType<T>` concept so every admitted Primitive has a recursively serialisable schema. No codec operation, wire profile, parser, caller buffer, or runtime Serialisation state is consumed here.
+
 ## Explicit non-dependencies
 
 There is no production dependency on:
 
 - Transport/radio libraries;
-- Serialisation;
 - Command;
 - Event;
 - State;

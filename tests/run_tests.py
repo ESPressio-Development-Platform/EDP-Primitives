@@ -19,6 +19,28 @@ SYSTEM_ROOT = Path(
     )
 ).resolve()
 SYSTEM_INCLUDE = SYSTEM_ROOT / "src"
+SERIALISATION_ROOT = Path(
+    os.environ.get(
+        "EDP_SERIALISATION_ROOT",
+        ROOT.parent / "EDP-Serialisation",
+    )
+).resolve()
+SERIALISATION_INCLUDE = SERIALISATION_ROOT / "src"
+BOUNDED_TYPES_ROOT = Path(
+    os.environ.get(
+        "EDP_BOUNDED_TYPES_ROOT",
+        ROOT.parent / "EDP-BoundedTypes",
+    )
+).resolve()
+BOUNDED_TYPES_INCLUDE = BOUNDED_TYPES_ROOT / "src"
+MEMORY_ROOT = Path(os.environ.get("EDP_MEMORY_ROOT", ROOT.parent / "EDP-Memory")).resolve()
+MEMORY_INCLUDE = MEMORY_ROOT / "src"
+PLATFORM_ROOT = Path(os.environ.get("EDP_PLATFORM_ROOT", ROOT.parent / "EDP-Platform")).resolve()
+PLATFORM_INCLUDE = PLATFORM_ROOT / "src"
+BOUNDED_TOPOLOGY_ROOT = Path(os.environ.get("EDP_BOUNDED_TOPOLOGY_ROOT", ROOT.parent / "EDP-BoundedTopology")).resolve()
+BOUNDED_TOPOLOGY_INCLUDE = BOUNDED_TOPOLOGY_ROOT / "src"
+PORTABLE_ROOT = Path(os.environ.get("EDP_PLATFORM_PORTABLE_ROOT", ROOT.parent / "EDP-Platform-Portable")).resolve()
+PORTABLE_INCLUDE = PORTABLE_ROOT / "src"
 INCLUDE = ROOT / "src"
 CXX = os.environ.get("CXX", "c++")
 
@@ -35,6 +57,7 @@ COMPILE_FAIL_TESTS = (
     ROOT / "tests" / "compile_fail" / "invalid_family_identifier.cpp",
     ROOT / "tests" / "compile_fail" / "missing_family_planner.cpp",
     ROOT / "tests" / "compile_fail" / "missing_schema.cpp",
+    ROOT / "tests" / "compile_fail" / "non_serialisable_field.cpp",
 )
 
 COMMON_ARGUMENTS = (
@@ -45,6 +68,12 @@ COMMON_ARGUMENTS = (
     "-pedantic",
     f"-I{INCLUDE}",
     f"-I{SYSTEM_INCLUDE}",
+    f"-I{SERIALISATION_INCLUDE}",
+    f"-I{BOUNDED_TYPES_INCLUDE}",
+    f"-I{MEMORY_INCLUDE}",
+    f"-I{PLATFORM_INCLUDE}",
+    f"-I{BOUNDED_TOPOLOGY_INCLUDE}",
+    f"-I{PORTABLE_INCLUDE}",
 )
 
 
@@ -78,6 +107,33 @@ def main() -> int:
             file=sys.stderr,
         )
         return 2
+
+    if not (SERIALISATION_INCLUDE / "serialisation" / "SerialisableType.hpp").is_file():
+        print(
+            "ERROR: EDP-Serialisation source not found. "
+            "Place EDP-Serialisation beside EDP-Primitives or set EDP_SERIALISATION_ROOT.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if not (BOUNDED_TYPES_INCLUDE / "ESPressio_BoundedTypes.hpp").is_file():
+        print(
+            "ERROR: EDP-BoundedTypes source not found. "
+            "Place EDP-BoundedTypes beside EDP-Primitives or set EDP_BOUNDED_TYPES_ROOT.",
+            file=sys.stderr,
+        )
+        return 2
+
+    dependency_headers = (
+        (MEMORY_INCLUDE / "ESPressio_Memory.hpp", "EDP-Memory"),
+        (PLATFORM_INCLUDE / "ESPressio_Platform.hpp", "EDP-Platform"),
+        (BOUNDED_TOPOLOGY_INCLUDE / "ESPressio_BoundedTopology.hpp", "EDP-BoundedTopology"),
+        (PORTABLE_INCLUDE / "ESPressio_Platform_Portable.hpp", "EDP-Platform-Portable"),
+    )
+    for header, dependency in dependency_headers:
+        if not header.is_file():
+            print(f"ERROR: {dependency} source not found: {header}", file=sys.stderr)
+            return 2
 
     with tempfile.TemporaryDirectory(prefix="edp-primitives-tests-") as temporary_directory:
         output_directory = Path(temporary_directory)

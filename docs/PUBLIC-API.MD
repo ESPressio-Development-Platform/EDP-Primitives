@@ -23,12 +23,13 @@ Validates a family tag containing a constant valid `PrimitiveFamilyIdentifier` a
 Requires:
 
 - a valid `System::SchemaType<T>`;
+- a valid `Serialisation::SerialisableType<T>`;
 - a nested `Family` Type;
 - a valid Primitive family.
 
 Therefore every Primitive has universal `System::TypeIdentifier` identity and an authoritative compile-time `Fields` schema. Zero-data Primitives declare `using Fields = System::FieldSet<>;`. Payload-bearing Primitives use explicit stable `System::FieldBinding`s.
 
-The current prerequisite contract does not yet require `Serialisation::SerialisableType`; that universal constraint is added only after `EDP-Serialisation` exists.
+`Serialisation::SerialisableType<T>` is now a universal Primitive invariant. This recursively validates the schema Field value Types while leaving semantic Type/Field identity in EDP-System.
 
 ### Readers
 

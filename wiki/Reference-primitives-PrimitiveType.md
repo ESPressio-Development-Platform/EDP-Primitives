@@ -22,12 +22,13 @@ Validates that a family Type declares:
 Requires:
 
 - `System::SchemaType<TType>`;
+- `Serialisation::SerialisableType<TType>`;
 - nested `Family`;
 - valid `PrimitiveFamilyType<Family>`.
 
-Every Primitive is therefore structurally schema-bearing. A zero-data Primitive declares `using Fields = System::FieldSet<>;`; payload-bearing Primitives declare explicit stable `System::FieldBinding`s. Numeric FieldIdentifier is authoritative semantic Field identity.
+Every Primitive is therefore structurally schema-bearing and recursively serialisable. A zero-data Primitive declares `using Fields = System::FieldSet<>;`; payload-bearing Primitives declare explicit stable `System::FieldBinding`s. Numeric FieldIdentifier is authoritative semantic Field identity.
 
-The Stage-A prerequisite contract intentionally does not yet require `Serialisation::SerialisableType`; that becomes universal only after `EDP-Serialisation` exists.
+`Serialisation::SerialisableType` is now part of the universal Primitive predicate; unsupported schema Field Types make `PrimitiveType<T>` false.
 
 ### `PrimitiveFamilyOf<TType>`
 

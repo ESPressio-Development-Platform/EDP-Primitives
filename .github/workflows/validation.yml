@@ -20,6 +20,48 @@ jobs:
           ref: main
           path: EDP-System
 
+      - name: Checkout EDP-Serialisation
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-Serialisation
+          ref: main
+          path: EDP-Serialisation
+
+      - name: Checkout EDP-BoundedTypes
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-BoundedTypes
+          ref: main
+          path: EDP-BoundedTypes
+
+      - name: Checkout EDP-Memory
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-Memory
+          ref: main
+          path: EDP-Memory
+
+      - name: Checkout EDP-Platform
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-Platform
+          ref: main
+          path: EDP-Platform
+
+      - name: Checkout EDP-BoundedTopology
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-BoundedTopology
+          ref: main
+          path: EDP-BoundedTopology
+
+      - name: Checkout EDP-Platform-Portable
+        uses: actions/checkout@v4
+        with:
+          repository: ESPressio-Development-Platform/EDP-Platform-Portable
+          ref: main
+          path: EDP-Platform-Portable
+
       - name: Run C++20 host contracts
         working-directory: EDP-Primitives
         run: python3 tests/run_tests.py
