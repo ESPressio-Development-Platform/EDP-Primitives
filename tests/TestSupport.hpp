@@ -36,13 +36,13 @@ namespace ESPressio::Primitives::Tests::Support {
     /// First zero-field schema-bearing Primitive Type in TestFamily.
     struct PrimitiveA final {
 
-        /// Stable universal Type identity.
+        /// Non-governed test/demo-only Type identity; not valid for production interoperability.
         static constexpr System::TypeIdentifier Identifier{
             System::TypeIdentifier::Storage{
                 0x00U,
                 0x00U,
                 0x01U,
-                0x00U,
+                0xFEU,
                 0x00U,
                 0x00U,
                 0x00U,

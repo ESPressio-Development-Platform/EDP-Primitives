@@ -45,15 +45,15 @@ namespace Demo {
     /// First zero-field semantic Primitive Type.
     struct StartSignal final {
 
-        /// Stable universal Type identity.
+        /// Non-governed test/demo-only Type identity; not valid for production interoperability.
         static constexpr ESPressio::System::TypeIdentifier Identifier{
             ESPressio::System::TypeIdentifier::Storage{
                 0x00U,
                 0x00U,
                 0x01U,
+                0xFEU,
                 0x00U,
-                0x00U,
-                0x00U,
+                0x01U,
                 0x00U,
                 0x01U
             }
